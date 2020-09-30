@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ProjectModuleManager">
+    <modules>
+      <module fileurl="file://$PROJECT_DIR$/wuage.iml" filepath="$PROJECT_DIR$/wuage.iml" />
+      <module fileurl="file://$PROJECT_DIR$/wuage-common/wuage-common.iml" filepath="$PROJECT_DIR$/wuage-common/wuage-common.iml" />
+      <module fileurl="file://$PROJECT_DIR$/wuage-dao/wuage-dao.iml" filepath="$PROJECT_DIR$/wuage-dao/wuage-dao.iml" />
+      <module fileurl="file://$PROJECT_DIR$/wuage-framework/wuage-framework.iml" filepath="$PROJECT_DIR$/wuage-framework/wuage-framework.iml" />
+      <module fileurl="file://$PROJECT_DIR$/wuage-service/wuage-service.iml" filepath="$PROJECT_DIR$/wuage-service/wuage-service.iml" />
+      <module fileurl="file://$PROJECT_DIR$/wuage-web/wuage-web.iml" filepath="$PROJECT_DIR$/wuage-web/wuage-web.iml" />
+    </modules>
+  </component>
+</project>

@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.wuage.mapper.ConfigMapper">
+
+                <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.wuage.entity.Config">
+                                <id column="config_id" property="configId" />
+                                                                                                                                            <result column="config_code" property="configCode" />
+                                            <result column="name" property="name" />
+                                            <result column="config_value" property="configValue" />
+                        </resultMap>
+                <!-- 通用查询结果列 -->
+        <sql id="Base_Column_List">
+        config_id, config_code, name, config_value
+    </sql>
+
+    </mapper>

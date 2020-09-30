@@ -1,0 +1,92 @@
+package ${package.ServiceImpl};
+
+import java.util.List;
+import com.wuage.Result.ApiResult;
+import com.wuage.entity.Vo.PageInfo;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.transaction.annotation.Transactional;
+import ${package.Entity}.${entity};
+import ${package.Mapper}.${table.mapperName};
+import ${package.Service}.${table.serviceName};
+import ${superServiceImplClassPackage};
+import org.springframework.stereotype.Service;
+
+/**
+ * <p>
+ * $!{table.comment} 服务实现类
+ * </p>
+ *
+ * @author ${author}
+ * @since ${date}
+ */
+@Service
+#if(${kotlin})
+open class ${table.serviceImplName} : ${superServiceImplClass}<${table.mapperName}, ${entity}>(), ${table.serviceName} {
+
+        }
+#else
+        public class ${table.serviceImplName} extends ${superServiceImplClass}<${table.mapperName}, ${entity}> implements ${table.serviceName} {
+
+            @Autowired
+            private ${table.mapperName} ${table.entityPath}Mapper;
+
+
+            /**
+             * 查询$!{table.comment}
+             * @param pageInfo
+             * @return
+             * @throws Exception
+             */
+            @Override
+            public List<${entity}>   get${entity}s(PageInfo pageInfo) throws Exception{
+
+                return null;
+            }
+
+            /**
+             * 添加$!{table.comment}
+             * @param ${table.entityPath}
+             * @return
+             * @throws Exception
+             */
+            @Transactional(rollbackFor = Exception.class)
+            @Override
+            public ApiResult add${entity}(${entity} ${table.entityPath}) throws Exception {
+
+                 ${table.entityPath}Mapper.insert(${table.entityPath});
+
+                 return ApiResult.success();
+            }
+
+            /**
+             * 删除$!{table.comment}
+             * @param id
+             * @return
+             * @throws Exception
+             */
+            @Transactional(rollbackFor = Exception.class)
+            @Override
+            public ApiResult delete${entity}( Integer id)throws Exception{
+
+                 ${table.entityPath}Mapper.deleteById(id);
+
+                  return ApiResult.success();
+            }
+
+            /**
+           * 更新$!{table.comment}
+           * @param ${table.entityPath}
+           * @return
+           * @throws Exception
+           */
+            @Transactional(rollbackFor = Exception.class)
+            @Override
+             public ApiResult update${entity}(${entity} ${table.entityPath}) throws Exception{
+
+                ${table.entityPath}Mapper.updateById(${table.entityPath});
+
+                 return ApiResult.success();
+            }
+        }
+#end

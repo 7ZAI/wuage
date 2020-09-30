@@ -1,0 +1,114 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.wuage.mapper.MenuMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.wuage.entity.Menu">
+        <id column="menu_id" property="menuId"/>
+        <result column="type" property="type"/>
+        <result column="menu_name" property="menuName"/>
+        <result column="icon" property="icon"/>
+        <result column="url" property="url"/>
+        <result column="order_number" property="orderNumber"/>
+        <result column="status" property="status"/>
+        <result column="parent_id" property="parentId"/>
+        <result column="creater" property="creater"/>
+        <result column="ctime" property="ctime"/>
+        <result column="update_by" property="updateBy"/>
+        <result column="update_time" property="updateTime"/>
+        <result column="permission" property="permission"/>
+        <result column="component_path" property="componentPath"/>
+        <result column="hasChildren" property="hasChildren"/>
+        <result column="parentName" property="parentName"/>
+    </resultMap>
+
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        menu_id, menu_name, type, icon, url, order_number, status, parent_id, creater, ctime, update_by, update_time, permission,component_path,hasChildren
+    </sql>
+
+    <sql id="selectAll">
+        select m.menu_id, m.menu_name, m.type, m.icon, m.url, m.order_number,
+        m.status, m.parent_id, m.creater, m.ctime, m.update_by, m.update_time, m.permission,m.component_path,m.hasChildren
+    </sql>
+
+    <!--渲染侧边栏 菜单-->
+    <select id="getMenusByUserId" parameterType="Integer" resultType="com.wuage.entity.Menu">
+
+        select DISTINCT m.menu_id, m.menu_name, m.type, m.icon, m.url, m.order_number,
+        m.status, m.parent_id, m.creater, m.ctime, m.update_by, m.update_time, m.permission,m.component_path,m.hasChildren
+        from sys_menu m
+        left join sys_role_menu rm on rm.menu_id = m.menu_id
+        left join sys_user_role ur on ur.role_id = rm.role_id
+        where ur.user_id = #{userId} and m.type in (1,2) and m.status=1
+        order by m.order_number ASC
+    </select>
+
+    <select id="getMenuList"  resultType="com.wuage.entity.Menu">
+
+        <include refid="selectAll"></include>
+        from sys_menu m
+        left join sys_role_menu rm on rm.menu_id = m.menu_id
+        left join sys_user_role ur on ur.role_id = rm.role_id
+        where ur.user_id = #{userId} and parent_id = #{menuId}
+    </select>
+
+    <select id="hasChildren" parameterType="integer" resultType="integer">
+        select count(*) from sys_menu where parent_id = #{menuId}
+    </select>
+    
+    <!--懒加载 已弃用-->
+    <select id="getMenusByUserIdParentId" parameterType="Integer" resultMap="BaseResultMap">
+        <include refid="selectAll"></include>,m2.menu_name as parentName
+        from sys_menu m
+        left join sys_menu m2 on m.parent_id = m2.menu_id
+        where m.parent_id = #{parentId}
+    </select>
+
+    <!--超级管理员 获取所有-->
+    <select id="getAllMenus"  resultMap="BaseResultMap">
+        <include refid="selectAll"></include> ,m2.menu_name as parentName
+        from sys_menu m
+        left join sys_menu m2 on m.parent_id = m2.menu_id
+        where 1 = 1
+        <if test="pageInfo.status != null and pageInfo.status != '' or pageInfo.status == 0 ">
+        and m.status = #{pageInfo.status}
+        </if>
+        <if test="pageInfo.type != null and pageInfo.type != ''">
+            and m.type = #{pageInfo.type}
+        </if>
+        <if test="pageInfo.keywords != null and pageInfo.keywords != ''">
+          and m.menu_name like concat('%', #{pageInfo.keywords} ,'%')
+        </if>
+        order by m.order_number ASC
+    </select>
+
+    <!--根据角色 获取菜单-->
+    <select id="getMenuByRole"  resultMap="BaseResultMap">
+        <include refid="selectAll"></include>
+        from sys_menu m
+        left JOIN sys_role_menu srm on m.menu_id = srm.menu_id
+        left join sys_user_role sur on sur.role_id = srm.role_id
+        where sur.user_id = #{userId} AND 1 =1
+        <if test="pageInfo.status != null and pageInfo.status != '' or pageInfo.status == 0">
+            and m.status = #{pageInfo.status}
+        </if>
+        <if test="pageInfo.type != null and pageInfo.type != ''">
+            and m.type = #{pageInfo.type}
+        </if>
+        <if test="pageInfo.keywords != null and pageInfo.keywords != ''">
+            and m.menu_name like concat('%', #{pageInfo.keywords} ,'%')
+        </if>
+        order by m.order_number ASC
+    </select>
+    
+    
+    <select id="getPermissionsByIds" resultType="java.lang.String">
+        select permission from sys_menu where menu_id in
+        <foreach collection="menuIds" item="item" index="index" separator="," open="(" close=")">
+          #{item}
+       </foreach>
+    </select>
+
+</mapper>

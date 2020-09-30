@@ -1,0 +1,8 @@
+<component name="ArtifactManager">
+  <artifact type="war" name="wuage-web:war">
+    <output-path>$PROJECT_DIR$/wuage-web/target</output-path>
+    <root id="archive" name="wuage-web-1.0.war">
+      <element id="artifact" artifact-name="wuage-web:war exploded" />
+    </root>
+  </artifact>
+</component>

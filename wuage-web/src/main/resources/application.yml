@@ -1,0 +1,226 @@
+# 项目相关配置
+wuage:
+  # 名称
+  name: Wuage
+  # 版本
+  version: 1.0
+  # 版权年份
+  copyrightYear: 2020
+  # 实例演示开关
+  demoEnabled: true
+  # 文件路径 示例（ Windows配置D:/wuage/uploadPath，Linux配置 /home/wuage/uploadPath）
+  profile: D:/wuage/uploadPath
+  # 获取ip地址开关
+  addressEnabled: true
+
+# 开发环境配置
+server:
+  # 服务器的HTTP端口，默认为80
+  port: 80
+  servlet:
+    # 应用的访问路径
+    context-path: /wuage
+  tomcat:
+    # tomcat的URI编码
+    uri-encoding: UTF-8
+    # tomcat最大线程数，默认为200
+    max-threads: 800
+    # Tomcat启动初始化的线程数，默认值25
+    min-spare-threads: 30
+ 
+# 日志配置
+logging:
+  level:
+    com.wuage: debug
+    org.springframework: debug
+
+# 用户配置
+user:
+  password:
+    # 密码错误{maxRetryCount}次锁定10分钟
+    maxRetryCount: 5
+
+transaction:
+  rollback-on-commit-failure: true
+# Spring配置
+spring:
+  profiles:
+    active: dev
+  # 服务模块
+#  devtools:
+#    livereload:
+#      enabled: true
+#    restart:
+#      # 热部署开关
+#      enabled: true
+#      additional-paths: src/main/java
+  #  # 模板引擎
+#  thymeleaf:
+#    mode: HTML
+#    encoding: utf-8
+#    # 禁用缓存
+#    cache: false
+#  # 资源信息
+#  messages:
+#    # 国际化资源文件路径
+#    basename: static/i18n/messages
+#  jackson:
+#    time-zone: GMT+8
+#    date-format: yyyy-MM-dd HH:mm:ss
+#  profiles:
+#    active: druid
+#  # 文件上传
+#  servlet:
+#     multipart:
+#       # 单个文件大小
+#       max-file-size:  10MB
+#       # 设置总上传的文件大小
+#       max-request-size:  20MB
+#      password: ENC(I5D96jf97heNMtOGZj7mHw==)
+# 数据源配置
+  datasource:
+    type: com.alibaba.druid.pool.DruidDataSource
+    driverClassName: com.mysql.cj.jdbc.Driver
+    druid:
+      url: jdbc:mysql://localhost:3306/wuage?useUnicode=true&characterEncoding=utf8&zeroDateTimeBehavior=convertToNull&useSSL=true&serverTimezone=GMT%2B8
+      username: root
+      password: ENC(I5D96jf97heNMtOGZj7mHw==)
+
+
+      # 初始连接数
+      initialSize: 5
+      # 最小连接池数量
+      minIdle: 10
+      # 最大连接池数量
+      maxActive: 20
+      # 配置获取连接等待超时的时间
+      maxWait: 60000
+      # 配置间隔多久才进行一次检测，检测需要关闭的空闲连接，单位是毫秒
+      timeBetweenEvictionRunsMillis: 60000
+      # 配置一个连接在池中最小生存的时间，单位是毫秒
+      minEvictableIdleTimeMillis: 300000
+      # 配置一个连接在池中最大生存的时间，单位是毫秒
+      maxEvictableIdleTimeMillis: 900000
+      # 配置检测连接是否有效
+      validationQuery: SELECT 1 FROM DUAL
+      testWhileIdle: true
+      testOnBorrow: false
+      testOnReturn: false
+      webStatFilter:
+        enabled: true
+      statViewServlet:
+        enabled: true
+        # 设置白名单，不填则允许所有访问
+        allow:
+        url-pattern: /druid/*
+        # 控制台管理用户名和密码
+        login-username:
+        login-password:
+      filter:
+        stat:
+          enabled: true
+          # 慢SQL记录
+          log-slow-sql: true
+          slow-sql-millis: 1000
+          merge-sql: true
+        wall:
+          config:
+            multi-statement-allow: true
+
+# MyBatis plus
+mybatis-plus:
+  mapper-locations: classpath:/mapper/*Mapper.xml
+  #实体扫描，多个package用逗号或者分号分隔
+  typeAliasesPackage: com.wuage.entity
+#  typeEnumsPackage: com.baomidou.springboot.entity.enums
+  global-config:
+    # 数据库相关配置
+    db-config:
+      #主键类型  AUTO:"数据库ID自增", INPUT:"用户输入ID",ID_WORKER:"全局唯一ID (数字类型唯一ID)", UUID:"全局唯一ID UUID";
+      id-type: id_worker
+      #字段策略 IGNORED:"忽略判断",NOT_NULL:"非 NULL 判断"),NOT_EMPTY:"非空判断"
+      field-strategy: not_empty
+      #驼峰下划线转换
+      column-underline: true
+      #数据库大写下划线转换
+      #capital-mode: true
+      #逻辑删除配置
+      logic-delete-value: 0
+      logic-not-delete-value: 1
+      db-type: mysql
+    #刷新mapper 调试神器
+    refresh: true
+  # 原生配置
+  configuration:
+    map-underscore-to-camel-case: true
+    cache-enabled: false
+
+
+# 防止XSS攻击
+#xss:
+#  # 过滤开关
+#  enabled: true
+#  # 排除链接（多个用逗号分隔）
+#  excludes: /system/notice/*
+#  # 匹配链接
+#  urlPatterns: /system/*,/monitor/*,/tool/*
+
+---
+# dev profile 开发配置
+wuage:
+  profile: D:/wuage/uploadPath
+
+server:
+  port: 80
+
+spring:
+  profiles: dev
+  # 服务模块
+  devtools:
+    livereload:
+      enabled: true
+    restart:
+        # 热部署开关
+        enabled: true
+        additional-paths: src/main/java
+  datasource:
+      druid:
+        password: ENC(I5D96jf97heNMtOGZj7mHw==)
+
+
+logging:
+  level:
+    com.wuage: debug
+    org.springframework: debug
+
+
+---
+
+# prod profile 生产配置
+wuage:
+  profile: /home/wuage/uploadPath
+
+server:
+  port: 10808
+
+spring:
+  profiles: prod
+  # 服务模块
+  devtools:
+    livereload:
+      enabled: false
+    restart:
+        # 热部署开关
+        enabled: false
+
+  datasource:
+      druid:
+        url: jdbc:mysql://localhost:3306/wuage?useUnicode=true&characterEncoding=utf8&zeroDateTimeBehavior=convertToNull&useSSL=true&serverTimezone=GMT%2B8
+        username: root
+        password: ENC(CpKiNUIlmO78EF+QC8dc6krc+xKnHmGPFuM/SFeBHkw=)
+
+
+logging:
+  level:
+    com.wuage: info
+    org.springframework: info
