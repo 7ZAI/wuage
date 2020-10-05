@@ -43,14 +43,15 @@ public class RolePermissionCacheManager {
 
         map.forEach((k, y) -> {
 
+            //shiro 缓存权限数据对象
             SimpleAuthorizationInfo simpleAuthorizationInfo = (SimpleAuthorizationInfo) y.getObjectValue();
             HashSet<String> rolesset = (HashSet<String>) simpleAuthorizationInfo.getRoles();
 
             if(rolesset.contains(String.valueOf(role.getRoleId()))){
 
-                List<Integer> menids = Arrays.asList(role.getMenuIds());
+                List<Integer> menuIds = Arrays.asList(role.getMenuIds());
                 try {
-                    List<String> newPermissions = menuMapper.getPermissionsByIds(menids);
+                    List<String> newPermissions = menuMapper.getPermissionsByIds(menuIds);
                     Set<String> setString = simpleAuthorizationInfo.getStringPermissions();
 
                     setString.removeAll(oldPermissions);
@@ -59,7 +60,7 @@ public class RolePermissionCacheManager {
                     simpleAuthorizationInfo.setStringPermissions(setString);
 
                 } catch (Exception e) {
-                    logger.info("------------更新角色缓存时发生异常 -------------" );
+                    logger.error("------------更新角色缓存时发生异常 -------------" );
                     e.printStackTrace();
 
                 }

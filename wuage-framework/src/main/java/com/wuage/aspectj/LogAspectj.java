@@ -24,6 +24,7 @@ import javax.servlet.http.HttpServletRequest;
 import java.lang.reflect.Method;
 import java.util.Map;
 import java.util.Objects;
+import java.util.concurrent.TimeUnit;
 
 /**
  * 日志切面
@@ -32,7 +33,11 @@ import java.util.Objects;
 @Component
 public class LogAspectj {
 
-    Logger logger = LoggerFactory.getLogger(this.getClass());
+    //记录方法运行时间
+    private static final ThreadLocal<Long> TIME_THREADLOCAL = new ThreadLocal<Long>();
+
+    private Logger logger = LoggerFactory.getLogger(this.getClass());
+
 
     //织入点
     @Pointcut("@annotation(com.wuage.annotation.LogInfo)")
@@ -42,7 +47,7 @@ public class LogAspectj {
 
     @Before("logPointCut()")
     public void doBefore(JoinPoint joinPoint) {
-
+        TIME_THREADLOCAL.set(System.currentTimeMillis());
         HttpServletRequest request = ServletUtils.getRequest();
         logger.debug("请求url: " + request.getRequestURI());
         logger.debug("请求参数:" + JSON.toJSONString(request.getParameterMap()));
@@ -76,7 +81,7 @@ public class LogAspectj {
 
         log.setLogTime(DateUtils.getNowDate());
         log.setResultType(GlobalConstants.SUCCESS);
-        log.setLogType(logAnnotation.logType().getTypeValue());
+//        log.setLogType(logAnnotation.logType().getTypeValue());
         log.setOperatorType(logAnnotation.operateType().getTypeValue());
         log.setLogTitle(logAnnotation.title());
 
@@ -87,26 +92,31 @@ public class LogAspectj {
         String param = JSON.toJSONString(map);
         log.setParam(param);
 
-        if (log.getLogType().equals(LogType.SYSTEM_LOG.getTypeValue())) {
+//        if (log.getLogType().equals(LogType.SYSTEM_LOG.getTypeValue())) {
             User user = (User) SecurityUtils.getSubject().getPrincipal();
             log.setOperatorName(user.getLoginName());
             log.setOperatorId(user.getUserId());
-        }
+//        }
 
         //预留 前台的user log
-        if (log.getLogType().equals(LogType.APP_LOG.getTypeValue())) {
-
-        }
+//        if (log.getLogType().equals(LogType.APP_LOG.getTypeValue())) {
+//
+//        }
 
         if (!Objects.isNull(e)) {
             log.setResultType(GlobalConstants.FAIL);
             log.setErrorMsg(e.toString());
         }
 
-
         //待 异步处理 目前先这样吧
         log.setResult(JSON.toJSONString(jsonResult));
         LogService logService = SpringUtils.getBean(LogService.class);
+
+        Long costtime = System.currentTimeMillis() - TIME_THREADLOCAL.get();
+        String ctime = DateUtils.millToSecond(costtime);
+        log.setCostTime(ctime);
         logService.save(log);
+
+        logger.info( "方法："+methodSignature.getMethod().getName()+"  耗时："+ ctime);
     }
 }

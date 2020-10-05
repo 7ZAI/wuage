@@ -6,13 +6,11 @@ import com.wuage.Result.ApiResult;
 import com.wuage.Result.ResultCode;
 import com.wuage.annotation.LogInfo;
 import com.wuage.annotation.RepeatSubmit;
-import com.wuage.component.SuperAdmins;
 import com.wuage.entity.Dept;
 import com.wuage.entity.User;
 import com.wuage.entity.Vo.PageInfo;
 import com.wuage.service.DeptService;
 import com.wuage.service.UserService;
-import com.wuage.utils.DateUtils;
 import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.apache.shiro.cache.ehcache.EhCacheManager;
@@ -22,7 +20,6 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.constraints.NotNull;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
@@ -76,7 +73,6 @@ public class SysDepartmentController extends BaseController {
     @LogInfo(title = "更新部门")
     @RequiresPermissions("system:dept:update")
     @PutMapping("/departments")
-
     public ApiResult update(@Validated Dept dept) throws Exception {
 
         return deptService.updateDept(dept);
@@ -90,14 +86,13 @@ public class SysDepartmentController extends BaseController {
     @RequiresPermissions("system:dept:delete")
     @LogInfo(title = "删除部门")
     @DeleteMapping("/departments/{id}")
-    @Transactional(rollbackFor = Exception.class)
     public ApiResult delete(@PathVariable @NotNull Integer id) throws Exception {
 
 
         Dept dept = deptService.getById(id);
 
         if(Objects.isNull(dept)){
-            return  ApiResult.fail("非法参数！");
+            return  new ApiResult(ResultCode.ILLEGAL_PARAMETER);
         }
 
         if(deptService.hasChildren(id)>0){
@@ -110,7 +105,6 @@ public class SysDepartmentController extends BaseController {
 
             return ApiResult.fail("仍有用户属于该部门，无法删除！");
         }
-
 
         return deptService.deleteDept(id);
     }

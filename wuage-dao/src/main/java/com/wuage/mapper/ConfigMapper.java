@@ -2,7 +2,6 @@ package com.wuage.mapper;
 
 import com.wuage.entity.Config;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
-import org.apache.ibatis.annotations.Mapper;
 
 /**
  * <p>
@@ -10,9 +9,9 @@ import org.apache.ibatis.annotations.Mapper;
  * </p>
  *
  * @author binblink
- * @since 2019-12-12
+ * @since 2020-10-05
  */
-@Mapper
 public interface ConfigMapper extends BaseMapper<Config> {
+
 
 }

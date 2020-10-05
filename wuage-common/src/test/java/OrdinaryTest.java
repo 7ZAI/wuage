@@ -1,3 +1,4 @@
+import com.wuage.utils.DateUtils;
 import com.wuage.utils.security.RandomUtils;
 import org.junit.Test;
 
@@ -21,6 +22,16 @@ public class OrdinaryTest {
         System.out.println(s == null);
         System.out.println(s.isEmpty());
         System.out.println(s.trim().isEmpty());
+    }
+
+    @Test
+    public void millstosecondTest() throws InterruptedException {
+        long start = System.currentTimeMillis();
+        Thread.sleep(1200);
+        long end = System.currentTimeMillis();
+        long costtime = end - start;
+
+        System.out.println(  DateUtils.millToSecond(costtime));
     }
 
 }

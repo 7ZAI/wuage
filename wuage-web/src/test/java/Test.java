@@ -69,9 +69,9 @@ public class Test {
         System.out.println(j);
 
 
-        ByteSource bytesalt = new Md5Hash("yeepaf9n" + "admin");
-        SimpleHash simpleHash = new SimpleHash("md5", "123456abc", bytesalt, 2);
-        System.out.println(simpleHash.toHex());
+//        ByteSource bytesalt = new Md5Hash("" + "");
+//        SimpleHash simpleHash = new SimpleHash("md5", "", bytesalt, 2);
+//        System.out.println(simpleHash.toHex());
 //        List<String> list = new ArrayList<String>();
 //        list.add("aa");
 //        list.add("bb");

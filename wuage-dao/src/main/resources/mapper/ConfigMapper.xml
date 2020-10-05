@@ -5,13 +5,15 @@
                 <!-- 通用查询映射结果 -->
     <resultMap id="BaseResultMap" type="com.wuage.entity.Config">
                                 <id column="config_id" property="configId" />
-                                                                                                                                            <result column="config_code" property="configCode" />
-                                            <result column="name" property="name" />
-                                            <result column="config_value" property="configValue" />
+                            <result column="config_code" property="configCode" />                                                                                <result column="config_code" property="configCode" />
+                                <result column="name" property="name" />
+                                <result column="config_value" property="configValue" />
                         </resultMap>
                 <!-- 通用查询结果列 -->
         <sql id="Base_Column_List">
         config_id, config_code, name, config_value
     </sql>
+
+
 
     </mapper>

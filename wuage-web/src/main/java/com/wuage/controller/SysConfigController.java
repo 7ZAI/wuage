@@ -1,12 +1,20 @@
 package com.wuage.controller;
 
+import com.alibaba.fastjson.JSONObject;
+import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.wuage.Result.ApiResult;
+import com.wuage.annotation.LogInfo;
+import com.wuage.annotation.RepeatSubmit;
 import com.wuage.component.SysConfigMap;
 
+import com.wuage.entity.Config;
+import com.wuage.service.ConfigService;
+import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.Map;
 
 
 @RestController
@@ -17,10 +25,29 @@ public class SysConfigController {
     @Autowired
     private SysConfigMap configMap;
 
+    @Autowired
+    private ConfigService configService;
 
     @GetMapping("/config")
-    public ApiResult getSystemConfig() throws Exception{
+    @RequiresPermissions("system:config:view")
+    public ApiResult getSystemConfig() throws Exception {
 
         return ApiResult.success().setData(configMap.getAllConfig());
+    }
+
+    @LogInfo(title = "更改系统参数")
+    @RepeatSubmit
+    @PostMapping("/config")
+    @RequiresPermissions("system:config:update")
+    @Transactional(rollbackFor = Exception.class)
+    public ApiResult updateSystemConfig(@RequestParam Map<String, String> map) throws Exception {
+
+
+        map.forEach((k, v) -> {
+            configService.update(new UpdateWrapper<Config>().lambda().set(Config::getConfigValue, v).eq(Config::getConfigCode, k));
+        });
+
+        configMap.refrash();
+        return ApiResult.success();
     }
 }

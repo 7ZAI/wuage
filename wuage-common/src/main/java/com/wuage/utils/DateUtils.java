@@ -1,6 +1,9 @@
 package com.wuage.utils;
 
 
+import org.springframework.util.Assert;
+
+import java.math.BigDecimal;
 import java.time.Duration;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -131,5 +134,22 @@ public class DateUtils extends org.apache.commons.lang3.time.DateUtils
             stringBuilder.append(seconds+"秒");
         }
         return stringBuilder.toString();
+    }
+
+    /**
+     * 毫秒转为秒
+     * @param mills 毫秒
+     * @return 返回String
+     */
+    public static String millToSecond(long mills){
+
+        Assert.notNull(mills,"mills is not null!");
+
+        BigDecimal bigDecimal = new BigDecimal(String.valueOf(mills));
+
+        BigDecimal result =  bigDecimal.divide(new BigDecimal("1000"),4,BigDecimal.ROUND_HALF_UP);
+
+        return String.valueOf(result.toString());
+
     }
 }

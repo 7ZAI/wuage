@@ -4,24 +4,24 @@
 
                 <!-- 通用查询映射结果 -->
     <resultMap id="BaseResultMap" type="com.wuage.entity.Log">
-                                <id column="log_id" property="logId" />
+        <id column="log_id" property="logId" />
                                                                                                                                                                                                                                                                                                                                                     <result column="operator_type" property="operatorType" />
-                                            <result column="result" property="result" />
-                                            <result column="ip" property="ip" />
-                                            <result column="log_time" property="logTime" />
-                                            <result column="url" property="url" />
-                                            <result column="description" property="description" />
-                                            <result column="param" property="param" />
-                                            <result column="operator_name" property="operatorName" />
-                                            <result column="log_type" property="logType" />
-                                            <result column="error_msg" property="errorMsg" />
-                                            <result column="log_title" property="logTitle" />
-                                            <result column="operator_id" property="operatorId" />
-                                            <result column="result_type" property="resultType" />
-                        </resultMap>
+        <result column="result" property="result" />
+        <result column="ip" property="ip" />
+        <result column="log_time" property="logTime" />
+        <result column="url" property="url" />
+        <result column="description" property="description" />
+        <result column="param" property="param" />
+        <result column="operator_name" property="operatorName" />
+        <result column="error_msg" property="errorMsg" />
+        <result column="log_title" property="logTitle" />
+        <result column="operator_id" property="operatorId" />
+        <result column="result_type" property="resultType" />
+        <result column="cost_time" property="costTime" />
+    </resultMap>
                 <!-- 通用查询结果列 -->
         <sql id="Base_Column_List">
-        log_id, operator_type, result, ip, log_time, url, description, param, operator_name, log_type, error_msg, log_title, operator_id, result_type
+        log_id, operator_type, result, ip, log_time, url, description, param,cost_time, operator_name, error_msg, log_title, operator_id, result_type
     </sql>
 
     </mapper>

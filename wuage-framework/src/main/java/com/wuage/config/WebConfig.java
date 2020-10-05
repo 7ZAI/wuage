@@ -12,9 +12,8 @@ public class WebConfig implements WebMvcConfigurer {
     @Autowired
     private RepeatSubmitInterceptor repeatSubmitInterceptor;
 
-
     /**
-     * 自定义拦截规则
+     * 自定义拦截规则 防止重复提交
      */
     @Override
     public void addInterceptors(InterceptorRegistry registry)

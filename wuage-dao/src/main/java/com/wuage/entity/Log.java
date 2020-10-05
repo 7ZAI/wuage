@@ -76,10 +76,7 @@ public class Log implements Serializable {
      */
     private String operatorName;
 
-    /**
-     * 日志类型 1后台系统 2前台系统
-     */
-    private Integer logType;
+
 
     /**
      * 错误信息
@@ -95,6 +92,11 @@ public class Log implements Serializable {
      * 操作人id
      */
     private Integer operatorId;
+
+    /**
+     * 花费时间
+     */
+    private String costTime;
 
     /**
      * 结果类型 0 成功 1 失败

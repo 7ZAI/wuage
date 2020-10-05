@@ -1,10 +1,13 @@
 package com.wuage.service.impl;
 
+
 import com.wuage.entity.Config;
 import com.wuage.mapper.ConfigMapper;
-import com.wuage.service.ConfigService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.wuage.service.ConfigService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
 
 /**
  * <p>
@@ -16,5 +19,9 @@ import org.springframework.stereotype.Service;
  */
 @Service
 public class ConfigServiceImpl extends ServiceImpl<ConfigMapper, Config> implements ConfigService {
+
+    @Autowired
+    private ConfigMapper configMapper;
+
 
 }
