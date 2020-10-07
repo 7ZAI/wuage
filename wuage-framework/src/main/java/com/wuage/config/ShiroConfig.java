@@ -58,6 +58,7 @@ public class ShiroConfig {
         filterChainDefinitionMap.put("/captchaImage**", "anon");
         filterChainDefinitionMap.put("/systemUser/login", "anon");
         filterChainDefinitionMap.put("/system/config", "anon");
+        filterChainDefinitionMap.put("/system/loginConfig", "anon");
 
         // 系统权限列表
         // filterChainDefinitionMap.putAll(SpringUtils.getBean(IMenuService.class).selectPermsAll());

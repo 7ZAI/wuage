@@ -1,5 +1,6 @@
 package com.wuage.entity;
 
+import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableName;
 import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableId;
@@ -111,4 +112,9 @@ public class Log implements Serializable {
         return log;
     }
 
+    /**
+     * 显示的ip地址
+     */
+    @TableField(exist = false)
+    private String ipString;
 }

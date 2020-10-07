@@ -129,7 +129,7 @@ public class SysUserRealm extends AuthorizingRealm {
             password = new String(token.getPassword());
         }
 
-        User user = userMapper.selectOne(new QueryWrapper<User>().lambda().eq(User::getLoginName, loginName));
+        User user = userMapper.selectOne(new QueryWrapper<User>().lambda().eq(User::getLoginName, loginName.trim()));
 
         if (user == null) {
             throw new UnknownAccountException("账号不存在");
@@ -156,7 +156,7 @@ public class SysUserRealm extends AuthorizingRealm {
         }
 
         SimpleAuthenticationInfo info = new SimpleAuthenticationInfo(user, user.getPassword(),
-                new Md5Hash(user.getSalt() + user.getLoginName()), getName());
+                new Md5Hash(user.getSalt()), getName());
 
         return info;
     }

@@ -2,26 +2,73 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.wuage.mapper.LogMapper">
 
-                <!-- 通用查询映射结果 -->
+    <!-- 通用查询映射结果 -->
     <resultMap id="BaseResultMap" type="com.wuage.entity.Log">
-        <id column="log_id" property="logId" />
-                                                                                                                                                                                                                                                                                                                                                    <result column="operator_type" property="operatorType" />
-        <result column="result" property="result" />
-        <result column="ip" property="ip" />
-        <result column="log_time" property="logTime" />
-        <result column="url" property="url" />
-        <result column="description" property="description" />
-        <result column="param" property="param" />
-        <result column="operator_name" property="operatorName" />
-        <result column="error_msg" property="errorMsg" />
-        <result column="log_title" property="logTitle" />
-        <result column="operator_id" property="operatorId" />
-        <result column="result_type" property="resultType" />
-        <result column="cost_time" property="costTime" />
+        <id column="log_id" property="logId"/>
+        <result column="operator_type" property="operatorType"/>
+        <result column="result" property="result"/>
+        <result column="ip" property="ip"/>
+        <result column="ipString" property="ipString"/>
+        <result column="log_time" property="logTime"/>
+        <result column="url" property="url"/>
+        <result column="description" property="description"/>
+        <result column="param" property="param"/>
+        <result column="operator_name" property="operatorName"/>
+        <result column="error_msg" property="errorMsg"/>
+        <result column="log_title" property="logTitle"/>
+        <result column="operator_id" property="operatorId"/>
+        <result column="result_type" property="resultType"/>
+        <result column="cost_time" property="costTime"/>
     </resultMap>
-                <!-- 通用查询结果列 -->
-        <sql id="Base_Column_List">
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
         log_id, operator_type, result, ip, log_time, url, description, param,cost_time, operator_name, error_msg, log_title, operator_id, result_type
     </sql>
 
-    </mapper>
+    <select id="getLogs" resultType="com.wuage.entity.Log">
+        <bind name="limitstart" value="(pageInfo.page-1)*pageInfo.limit"/>
+        select log_id, operator_type, result, inet_ntoa(ip) as ipString, log_time, url, description,cost_time, operator_name, error_msg,
+        log_title, operator_id, result_type
+        from sys_log
+        join
+        (select log_id from sys_log sl where 1 = 1
+
+        <if test="pageInfo.status != null and pageInfo.status != '' or pageInfo.status == 0">
+            AND sl.result_type = #{pageInfo.status}
+        </if>
+        <if test="pageInfo.startTime != null  ">
+            AND  <![CDATA[ sl.log_time >= #{pageInfo.startTime} ]]>
+        </if>
+        <if test="pageInfo.endTime != null  ">
+            AND <![CDATA[  sl.log_time <= #{pageInfo.endTime} ]]>
+        </if>
+
+        <if test="pageInfo.keywords != null and pageInfo.keywords != ''">
+            AND sl.log_title like CONCAT(#{pageInfo.keywords},'%')
+        </if>
+
+        order by log_time desc limit #{limitstart},#{pageInfo.limit}) as m
+        using(log_id)
+    </select>
+
+    <select id="getLogsTotal" resultType="java.lang.Integer">
+        select count(*)
+        from sys_log sl where 1=1
+
+        <if test="pageInfo.status != null and pageInfo.status != '' or pageInfo.status == 0">
+            AND sl.result_type = #{pageInfo.status}
+        </if>
+        <if test="pageInfo.startTime != null  ">
+            AND  <![CDATA[ sl.log_time >= #{pageInfo.startTime} ]]>
+        </if>
+        <if test="pageInfo.endTime != null  ">
+            AND <![CDATA[  sl.log_time <= #{pageInfo.endTime} ]]>
+        </if>
+
+        <if test="pageInfo.keywords != null and pageInfo.keywords != ''">
+            AND sl.log_title like CONCAT(#{pageInfo.keywords},'%')
+        </if>
+
+    </select>
+
+</mapper>

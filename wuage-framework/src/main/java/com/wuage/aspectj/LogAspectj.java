@@ -6,6 +6,7 @@ import com.wuage.constant.GlobalConstants;
 import com.wuage.entity.Log;
 import com.wuage.entity.User;
 import com.wuage.enums.LogType;
+import com.wuage.enums.OperateType;
 import com.wuage.service.LogService;
 import com.wuage.utils.DateUtils;
 import com.wuage.utils.IpUtils;
@@ -73,6 +74,7 @@ public class LogAspectj {
         Signature signature = joinPoint.getSignature();
         MethodSignature methodSignature = (MethodSignature) signature;
         Method method = methodSignature.getMethod();
+        HttpServletRequest request = ServletUtils.getRequest();
 
         LogInfo logAnnotation = method.getAnnotation(LogInfo.class);
 
@@ -92,11 +94,17 @@ public class LogAspectj {
         String param = JSON.toJSONString(map);
         log.setParam(param);
 
-//        if (log.getLogType().equals(LogType.SYSTEM_LOG.getTypeValue())) {
+        if (log.getOperatorType().equals(OperateType.NORMAL.getTypeValue())) {
             User user = (User) SecurityUtils.getSubject().getPrincipal();
             log.setOperatorName(user.getLoginName());
             log.setOperatorId(user.getUserId());
-//        }
+        }else{
+            Map<String,String[]> mapParame =  request.getParameterMap();
+            String[] name = mapParame.get("loginName");
+            if( Objects.nonNull(name) && name.length>0){
+                log.setOperatorName(name[0]);
+            }
+        }
 
         //预留 前台的user log
 //        if (log.getLogType().equals(LogType.APP_LOG.getTypeValue())) {

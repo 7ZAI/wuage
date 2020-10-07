@@ -11,6 +11,8 @@ public class UserConstant {
     public final static String CAPTCHA_KEY = "captcha";
 
     public final static String SYSUSER_SESSION_KEY = "systemUser";
+
+    public final static String SUPER_ADMIN = "admin";
     /**
      * 用户正常状态
      */

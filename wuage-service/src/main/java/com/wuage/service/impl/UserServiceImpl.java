@@ -86,7 +86,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
         user.setSalt(salt);
         user.setCreater(currentUser.getUsername());
 
-        ByteSource bytesalt = new Md5Hash(salt + user.getLoginName());
+        ByteSource bytesalt = new Md5Hash(salt);
         SimpleHash simpleHash = new SimpleHash("md5", user.getPassword(), bytesalt, 2);
 
         user.setPassword(simpleHash.toHex());
@@ -100,8 +100,11 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
                 throw new Exception("插入角色用户关系数据异常！");
             }
         }
+        JSONObject jsonObject = new JSONObject();
+        jsonObject.put("uid",user.getUserId());
+        jsonObject.put("ctime",user.getCtime());
 
-        return ApiResult.success().setData(user.getUserId());
+        return ApiResult.success().setData(jsonObject);
     }
 
     /**

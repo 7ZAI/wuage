@@ -38,9 +38,13 @@ public class LogServiceImpl extends ServiceImpl<LogMapper, Log> implements LogSe
     @Override
     public List<Log> getLogs(PageInfo pageInfo) throws Exception {
 
-        return null;
+        return logMapper.getLogs(pageInfo);
     }
 
+    @Override
+    public Integer getLogsTotal(PageInfo pageInfo) throws Exception {
+        return logMapper.getLogsTotal(pageInfo);
+    }
 
 
     /**

@@ -8,6 +8,7 @@ import com.wuage.entity.Log;
 import com.wuage.service.LogService;
 import com.wuage.entity.Vo.PageInfo;
 
+import io.swagger.models.auth.In;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.annotation.Validated;
@@ -29,7 +30,7 @@ import org.springframework.web.bind.annotation.RestController;
  * @since 2020-09-18
  */
 @RestController
-@RequestMapping("/log")
+@RequestMapping("/system")
 public class LogController extends BaseController {
 
     private LogService logSerivce;
@@ -53,13 +54,13 @@ public class LogController extends BaseController {
     @GetMapping("/log")
     public ApiResult getLogs(PageInfo pageInfo) throws Exception {
 
-
-        List<Log> Logs = logSerivce.getLogs(pageInfo);
+        List<Log> logs = logSerivce.getLogs(pageInfo);
+        Integer total = logSerivce.getLogsTotal(pageInfo);
         JSONObject json = new JSONObject();
-        json.put(" Log", Logs);
+        json.put("logs", logs);
+        json.put("total", total);
 
-
-        return new ApiResult(ResultCode.SUCCESS, json);
+        return  ApiResult.success().setData(json);
 
     }
 
@@ -70,15 +71,15 @@ public class LogController extends BaseController {
      * @return
      * @throws Exception
      */
-    @RepeatSubmit
-    @PostMapping("/log")
-    @RequiresPermissions("system:log:add")
-    public ApiResult add(@Validated Log log) throws Exception {
-
-
-        return logSerivce.addLog(log);
-
-    }
+//    @RepeatSubmit
+//    @PostMapping("/log")
+//    @RequiresPermissions("system:log:add")
+//    public ApiResult add(@Validated Log log) throws Exception {
+//
+//
+//        return logSerivce.addLog(log);
+//
+//    }
 
     /**
      * 删除系统日志
@@ -87,13 +88,13 @@ public class LogController extends BaseController {
      * @return
      * @throws Exception
      */
-    @DeleteMapping("/log/logId}")
-    @RequiresPermissions("system:log:delete")
-    public ApiResult delete(@PathVariable @NotNull Integer logId) throws Exception {
-
-        return logSerivce.deleteLog(logId);
-
-    }
+//    @DeleteMapping("/log/logId}")
+//    @RequiresPermissions("system:log:delete")
+//    public ApiResult delete(@PathVariable @NotNull Integer logId) throws Exception {
+//
+//        return logSerivce.deleteLog(logId);
+//
+//    }
 
     /**
      * 更新系统日志
@@ -102,13 +103,13 @@ public class LogController extends BaseController {
      * @return
      * @throws Exception
      */
-    @RepeatSubmit
-    @PutMapping("/log/")
-    @RequiresPermissions("system:log:update")
-    public ApiResult update(Log log) throws Exception {
-
-        return logSerivce.updateLog(log);
-    }
+//    @RepeatSubmit
+//    @PutMapping("/log/")
+//    @RequiresPermissions("system:log:update")
+//    public ApiResult update(Log log) throws Exception {
+//
+//        return logSerivce.updateLog(log);
+//    }
 
 
 }

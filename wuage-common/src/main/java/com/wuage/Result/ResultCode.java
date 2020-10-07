@@ -74,7 +74,7 @@ public enum ResultCode {
 	/**
 	 * 功能关闭
 	 */
-	FUNCTION_FORBIDDEN("0X10015","该功能已关闭！");
+	FUNCTION_FORBIDDEN("0X10015","系统维护中，暂时关闭登录功能！");
 	
 	
 	

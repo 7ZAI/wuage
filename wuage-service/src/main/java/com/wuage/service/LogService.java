@@ -22,6 +22,8 @@ public interface LogService extends IService<Log> {
 
     List<Log> getLogs(PageInfo pageInfo) throws Exception;
 
+    Integer getLogsTotal(PageInfo pageInfo) throws Exception;
+
     ApiResult addLog(Log log) throws Exception;
 
     ApiResult updateLog(Log log) throws Exception;

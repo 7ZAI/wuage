@@ -2,6 +2,8 @@ package com.wuage.controller;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.wuage.Result.ApiResult;
+import com.wuage.Result.ResultCode;
+import com.wuage.annotation.LogInfo;
 import com.wuage.component.SuperAdmins;
 import com.wuage.component.SysConfigMap;
 import com.wuage.constant.GlobalConstants;
@@ -9,6 +11,7 @@ import com.wuage.constant.SysConfigConstant;
 import com.wuage.constant.UserConstant;
 import com.wuage.entity.*;
 import com.wuage.entity.Vo.SystemUserInfo;
+import com.wuage.enums.OperateType;
 import com.wuage.exception.customize.CaptchaException;
 import com.wuage.service.DeptService;
 import com.wuage.service.LogService;
@@ -51,8 +54,8 @@ public class SysLoginController extends BaseController {
     private EhCacheManager ehCacheManager;
     @Autowired
     private SysConfigMap sysConfigMap;
-    @Autowired
-    private LogService logService;
+//    @Autowired
+//    private LogService logService;
     @Autowired
     private MenuService menuService;
     @Autowired
@@ -69,19 +72,24 @@ public class SysLoginController extends BaseController {
     }
 
 
+    @LogInfo(title = "用户登录",operateType = OperateType.LOGIN)
     @PostMapping(value="/login")
-    @ApiOperation(value = "登录接口",notes = "参数：loginName,password,captcha,rememberMe")
     public ApiResult login(String loginName, String password, String captcha, boolean rememberMe, HttpServletRequest request) {
 
-        Subject subject = SecurityUtils.getSubject();
+        Integer val =  sysConfigMap.get(SysConfigConstant.LOGIN_SWITCH);
 
+        if(SysConfigConstant.CLOSE.equals(val) && !UserConstant.SUPER_ADMIN.equals(loginName)){
+            return new ApiResult(ResultCode.FUNCTION_FORBIDDEN);
+        }
+
+        Subject subject = SecurityUtils.getSubject();
 
         UsernamePasswordCaptchaToken token = new UsernamePasswordCaptchaToken(loginName, password, captcha);
         String username = (String) token.getPrincipal();
 
         Objects.requireNonNull(rememberMe);
         token.setRememberMe(rememberMe);
-        Log log ;
+//        Log log ;
         try {
             subject.login(token);
         }catch (CaptchaException e) {
@@ -103,11 +111,11 @@ public class SysLoginController extends BaseController {
 
             int times = sysConfigMap.get(SysConfigConstant.MAX_LOGIN_ERROR);
             int currentTimes = retryCount.incrementAndGet();
-
-            log =  Log.getLoginLog(request)
-                    .setResultType(GlobalConstants.FAIL)
-                    .setResult("登入失败")
-                    .setOperatorName(loginName);
+//
+//            log =  Log.getLoginLog(request)
+//                    .setResultType(GlobalConstants.FAIL)
+//                    .setResult("登入失败")
+//                    .setOperatorName(loginName);
 
             if (currentTimes >= times) {
                 User user = userService.getOne(new QueryWrapper<User>().lambda().eq(User::getLoginName, username));
@@ -118,24 +126,24 @@ public class SysLoginController extends BaseController {
                 long hours = sysConfigMap.get(SysConfigConstant.FREEZE_HOUR);
                 errorMsg = "输入密码错误次数超过" + times + "次,请在" + hours + "小时后再登录";
 
-                log.setErrorMsg(errorMsg);
-                logService.save(log);
+//                log.setErrorMsg(errorMsg);
+//                logService.save(log);
                 throw new LockedAccountException(errorMsg);
             }
 
             errorMsg = "密码错误!你还有" + (times - currentTimes) + "次机会，连续输错后账号将被锁定！";
 
-            log.setErrorMsg(errorMsg);
-            logService.save(log);
+//            log.setErrorMsg(errorMsg);
+//            logService.save(log);
             throw new ExcessiveAttemptsException(errorMsg);
 
         } catch (AuthenticationException e) {
 
-            log =  Log.getLoginLog(request)
-                    .setResultType(GlobalConstants.FAIL)
-                    .setResult("登入失败")
-                    .setOperatorName(loginName);
-            logService.save(log);
+//            log =  Log.getLoginLog(request)
+//                    .setResultType(GlobalConstants.FAIL)
+//                    .setResult("登入失败")
+//                    .setOperatorName(loginName);
+//            logService.save(log);
 
             throw new AuthenticationException("登录失败!请联系管理人员！");
         }
@@ -143,12 +151,12 @@ public class SysLoginController extends BaseController {
         passwordRetryCache.remove(username);
         Session session = subject.getSession();
         User user = (User) subject.getPrincipal();
-        log =  Log.getLoginLog(request)
-                .setResultType(GlobalConstants.SUCCESS)
-                .setResult("登入成功")
-                .setOperatorName(user.getLoginName())
-                .setOperatorId(user.getUserId());
-        logService.save(log);
+//        log =  Log.getLoginLog(request)
+//                .setResultType(GlobalConstants.SUCCESS)
+//                .setResult("登入成功")
+//                .setOperatorName(user.getLoginName())
+//                .setOperatorId(user.getUserId());
+//        logService.save(log);
 
         session.removeAttribute(UserConstant.CAPTCHA_KEY);
 
