@@ -10,6 +10,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 
 /**
@@ -21,7 +22,7 @@ public class SysConfigMap {
     @Autowired
     private ConfigService configService;
 
-    private HashMap<String, Integer> map;
+    private ConcurrentHashMap<String, Integer> map;
 
 //    private ReentrantReadWriteLock readWriteLock = new ReentrantReadWriteLock();
 
@@ -29,7 +30,8 @@ public class SysConfigMap {
     @PostConstruct
     private void init() {
         List<Config> list = configService.list();
-        this.map = (HashMap<String, Integer>) list.stream().collect(Collectors.toMap(Config::getConfigCode, Config::getConfigValue));
+        Map resultMap  =  list.stream().collect(Collectors.toMap(Config::getConfigCode, Config::getConfigValue));
+        this.map = new ConcurrentHashMap<>(resultMap);
     }
 
 
@@ -38,6 +40,16 @@ public class SysConfigMap {
         Objects.requireNonNull(keyCode);
         Integer value = map.get(keyCode);
         return value;
+    }
+
+
+    public void update(String keyCode,Integer value) {
+
+        Objects.requireNonNull(keyCode);
+        Objects.requireNonNull(value);
+
+        map.replace(keyCode,value);
+
     }
 
     public Map getAllConfig() {

@@ -5,6 +5,7 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 
 import com.wuage.Result.ApiResult;
 
+import com.wuage.Result.ResultCode;
 import com.wuage.annotation.LogInfo;
 import com.wuage.annotation.RepeatSubmit;
 import com.wuage.component.SuperAdmins;
@@ -39,8 +40,7 @@ public class SysUserController extends BaseController {
     private SuperAdmins superAdmins;
     @Autowired
     private EhCacheManager ehCacheManager;
-    @Autowired
-    private SysUserRealm sysUserRealm;
+
 
 
     /**
@@ -75,7 +75,7 @@ public class SysUserController extends BaseController {
                 .eq(User::getLoginName, loginName));
 
         if (!Objects.isNull(checkuser)) {
-            return ApiResult.fail("登陆名重复");
+            return ApiResult.fail(ResultCode.USERNAME_ALREADY_EXITS.getMsg());
         }
 
         ApiResult apiResult = userService.addUser(currentUser, user);
@@ -131,8 +131,12 @@ public class SysUserController extends BaseController {
     public ApiResult updateUser(@Validated User user) throws Exception {
 
         User currentUser = (User) SecurityUtils.getSubject().getPrincipal();
+        Integer updateUserId = user.getUserId();
+        User oldUser = userService.getById(updateUserId);
 
-        User oldUser = userService.getById(user.getUserId());
+        if (superAdmins.isSuperAdmin(updateUserId) && !superAdmins.isSuperAdmin(currentUser.getUserId())) {
+            return ApiResult.fail("没有操作超级管理员的权限！");
+        }
 
         //locked 有三种状态 但在前端只表现为两种 所以要处理一下
         if (user.getLocked().equals(UserConstant.USER_NORMAL) &&
@@ -147,14 +151,17 @@ public class SysUserController extends BaseController {
             user.setLocked(UserConstant.USER_DISABLE_BY_ERROR_PASSWORD);
         }
 
-        ApiResult apiResult = userService.updateUser(currentUser,user);
+        ApiResult apiResult = userService.updateUser(currentUser, user);
 
         superAdmins.refresh();
 
         return apiResult;
+
     }
 
-    @RequiresPermissions("system:user:update")
+
+    @LogInfo(title = "锁定用户")
+    @RequiresPermissions("system:user:lock")
     @PutMapping("/user/locked")
     public ApiResult updateUserLocked(@NotNull Integer userId,
                                       @NotNull Integer lockedStatus) throws Exception {
@@ -163,10 +170,16 @@ public class SysUserController extends BaseController {
             return ApiResult.fail("非法参数！");
         }
 
+        User currentUser = (User) SecurityUtils.getSubject().getPrincipal();
+
         User oldUser = userService.getById(userId);
 
+        if(superAdmins.isSuperAdmin(userId) && !superAdmins.isSuperAdmin(currentUser.getUserId())){
+            return ApiResult.fail("没有锁定超级管理员的权限！");
+        }
+
         if (Objects.isNull(oldUser)) {
-            return ApiResult.fail("用户不存在！");
+            return  new ApiResult(ResultCode.USER_NOT_EXITS);
         }
 
         if (lockedStatus.equals(UserConstant.USER_NORMAL) &&
@@ -200,6 +213,12 @@ public class SysUserController extends BaseController {
     @RequiresPermissions("system:user:update")
     @GetMapping(value = "/user/roles")
     public ApiResult getUserRelaRoles(@NotNull Integer deptId, @NotNull Integer userId) throws Exception {
+
+        User currentUser = (User) SecurityUtils.getSubject().getPrincipal();
+
+        if(superAdmins.isSuperAdmin(userId) && !superAdmins.isSuperAdmin(currentUser.getUserId())){
+            return ApiResult.fail("没有操作超级管理员的权限！");
+        }
 
         return  userService.getUserRelaRolesAndDeptName(deptId,userId);
     }

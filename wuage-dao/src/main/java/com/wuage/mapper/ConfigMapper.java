@@ -2,6 +2,7 @@ package com.wuage.mapper;
 
 import com.wuage.entity.Config;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import org.apache.ibatis.annotations.Param;
 
 /**
  * <p>
@@ -13,5 +14,5 @@ import com.baomidou.mybatisplus.core.mapper.BaseMapper;
  */
 public interface ConfigMapper extends BaseMapper<Config> {
 
-
+   Integer updateByCode(@Param("key") String key,@Param("value") Integer value) throws Exception;
 }

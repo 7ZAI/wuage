@@ -15,5 +15,8 @@
     </sql>
 
 
+    <update id="updateByCode" >
+        update sys_config set config_value = #{value} where config_code = #{key}
+    </update>
 
     </mapper>

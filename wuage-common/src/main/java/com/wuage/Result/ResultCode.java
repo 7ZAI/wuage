@@ -16,12 +16,12 @@ public enum ResultCode {
     /**
      * 用户名错误或不存在
      */
-    USERNAME_ERROR("0x10002", "用户名错误或不存在"),
+    USER_NOT_EXITS("0x10002", "用户不存在"),
     
     /**
      * 已存在该用户名
      */
-    USERNAME_IS_EXITS("0x100011", "已存在该用户名"),
+    USERNAME_ALREADY_EXITS("0x100011", "已存在该用户名"),
     /**
      * 密码错误
      */
@@ -74,7 +74,13 @@ public enum ResultCode {
 	/**
 	 * 功能关闭
 	 */
-	FUNCTION_FORBIDDEN("0X10015","系统维护中，暂时关闭登录功能！");
+	FUNCTION_FORBIDDEN("0X10015","系统维护中，暂时关闭登录功能！"),
+
+    /**
+    * 演示模式 提示
+    *
+    **/
+	SHOW_MODE_FORBIDDEN("0X10016","演示模式中该无法使用该功能！");
 	
 	
 	

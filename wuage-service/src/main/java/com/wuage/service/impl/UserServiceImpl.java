@@ -223,6 +223,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
     @Override
     public ApiResult getUserRelaRolesAndDeptName(Integer deptId, Integer userId) throws Exception {
 
+
         Dept dept = deptMapper.selectById(deptId);
         List<Role> roles = userMapper.getRolesById(userId);
 

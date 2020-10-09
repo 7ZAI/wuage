@@ -2,7 +2,11 @@ package com.wuage.controller;
 
 import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.wuage.Result.ApiResult;
+import com.wuage.Result.ResultCode;
+import com.wuage.annotation.LogInfo;
 import com.wuage.annotation.RepeatSubmit;
+import com.wuage.component.SysConfigMap;
+import com.wuage.constant.SysConfigConstant;
 import com.wuage.entity.User;
 import com.wuage.service.UserService;
 import org.apache.shiro.SecurityUtils;
@@ -26,9 +30,20 @@ public class SysProfileController  extends BaseController  {
     @Autowired
     private UserService userService;
 
+    @Autowired
+    private SysConfigMap configMap;
+
+    @LogInfo(title = "修改个人信息")
     @RepeatSubmit
     @PutMapping("/profile")
     public ApiResult modifyProfile(@NotNull String phone, @NotNull String name, String remark) throws Exception{
+
+        Integer sysMode =  configMap.get(SysConfigConstant.SYSTEM_MODE);
+
+        if(SysConfigConstant.MODE_SHOW.equals(sysMode)){
+
+            return new ApiResult(ResultCode.SHOW_MODE_FORBIDDEN);
+        }
 
         User user = (User) SecurityUtils.getSubject().getPrincipal();
 
@@ -40,10 +55,17 @@ public class SysProfileController  extends BaseController  {
         return ApiResult.success();
     }
 
-
+    @LogInfo(title = "修改个人密码")
     @RepeatSubmit
     @PutMapping("/profile/password")
     public ApiResult modifyPwd(@NotNull String oldpwd, @NotNull String newpwd,  @NotNull String checkpwd) throws Exception{
+
+        Integer sysMode =  configMap.get(SysConfigConstant.SYSTEM_MODE);
+
+        if(SysConfigConstant.MODE_SHOW.equals(sysMode)){
+
+            return new ApiResult(ResultCode.SHOW_MODE_FORBIDDEN);
+        }
 
         User user = (User) SecurityUtils.getSubject().getPrincipal();
 
@@ -54,7 +76,7 @@ public class SysProfileController  extends BaseController  {
 
         user = userService.getById(user.getUserId());
 
-        ByteSource bytesalt = new Md5Hash(user.getSalt()+ user.getLoginName());
+        ByteSource bytesalt = new Md5Hash(user.getSalt());
         SimpleHash simpleHash = new SimpleHash("md5", oldpwd, bytesalt, 2);
 
         if(simpleHash.toHex().equals(user.getPassword())){

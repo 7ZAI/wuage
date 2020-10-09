@@ -34,8 +34,8 @@ public class SysDepartmentController extends BaseController {
     @Autowired
     private UserService userService;
 
-    @Autowired
-    private EhCacheManager ehCacheManager;
+//    @Autowired
+//    private EhCacheManager ehCacheManager;
 
 //    @Autowired
 //    private SuperAdmins superAdmins;

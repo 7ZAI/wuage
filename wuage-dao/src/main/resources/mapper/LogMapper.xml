@@ -44,7 +44,7 @@
         </if>
 
         <if test="pageInfo.keywords != null and pageInfo.keywords != ''">
-            AND sl.log_title like CONCAT(#{pageInfo.keywords},'%')
+            AND sl.log_title like CONCAT('%',#{pageInfo.keywords},'%')
         </if>
 
         order by log_time desc limit #{limitstart},#{pageInfo.limit}) as m
@@ -66,7 +66,7 @@
         </if>
 
         <if test="pageInfo.keywords != null and pageInfo.keywords != ''">
-            AND sl.log_title like CONCAT(#{pageInfo.keywords},'%')
+            AND sl.log_title like CONCAT('%',#{pageInfo.keywords},'%')
         </if>
 
     </select>

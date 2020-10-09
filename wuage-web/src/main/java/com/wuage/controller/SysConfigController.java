@@ -3,13 +3,17 @@ package com.wuage.controller;
 import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.wuage.Result.ApiResult;
+import com.wuage.Result.ResultCode;
 import com.wuage.annotation.LogInfo;
 import com.wuage.annotation.RepeatSubmit;
+import com.wuage.component.SuperAdmins;
 import com.wuage.component.SysConfigMap;
 
 import com.wuage.constant.SysConfigConstant;
 import com.wuage.entity.Config;
+import com.wuage.entity.User;
 import com.wuage.service.ConfigService;
+import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
@@ -21,7 +25,7 @@ import java.util.Map;
 
 @RestController
 @RequestMapping("/system")
-public class SysConfigController {
+public class SysConfigController extends BaseController {
 
 
     @Autowired
@@ -29,6 +33,9 @@ public class SysConfigController {
 
     @Autowired
     private ConfigService configService;
+
+    @Autowired
+    private SuperAdmins superAdmins;
 
     @GetMapping("/config")
     @RequiresPermissions("system:config:view")
@@ -41,15 +48,25 @@ public class SysConfigController {
     @RepeatSubmit
     @PostMapping("/config")
     @RequiresPermissions("system:config:update")
-    @Transactional(rollbackFor = Exception.class)
-    public ApiResult updateSystemConfig(@RequestParam Map<String, String> map) throws Exception {
+    public ApiResult updateSystemConfig( @RequestBody Map<String, Integer> map) throws Exception {
 
+        Integer sysMode =  configMap.get(SysConfigConstant.SYSTEM_MODE);
+        User currentUser = (User) SecurityUtils.getSubject().getPrincipal();
 
+        if(SysConfigConstant.MODE_SHOW.equals(sysMode) && !superAdmins.isSuperAdmin(currentUser.getUserId())){
+
+            return new ApiResult(ResultCode.SHOW_MODE_FORBIDDEN);
+        }
+        //缓存更新
         map.forEach((k, v) -> {
-            configService.update(new UpdateWrapper<Config>().lambda().set(Config::getConfigValue, v).eq(Config::getConfigCode, k));
-        });
 
-        configMap.refrash();
+            logger.info("更新参数到缓存---------key:P"+k+"--- value:"+ String.valueOf(v));
+            configMap.update(k,v);
+//            configService.update(new UpdateWrapper<Config>().lambda().set(Config::getConfigValue, v).eq(Config::getConfigCode, k));
+        });
+        //异步更新到数据库
+        configService.asynUpdate(map);
+//        configMap.refrash();
         return ApiResult.success();
     }
 

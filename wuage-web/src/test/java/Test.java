@@ -69,7 +69,7 @@ public class Test {
         System.out.println(j);
 
 
-        ByteSource bytesalt = new Md5Hash("2kdbpdpn");
+        ByteSource bytesalt = new Md5Hash("");
         SimpleHash simpleHash = new SimpleHash("md5", "123456", bytesalt, 2);
         System.out.println(simpleHash.toHex());
 //        List<String> list = new ArrayList<String>();

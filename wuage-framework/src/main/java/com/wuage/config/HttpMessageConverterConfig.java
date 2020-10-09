@@ -28,7 +28,7 @@ public class HttpMessageConverterConfig {
      * 相当于以前设置进 ConversionServiceFactoryBean
      *
      * @return Converter<java.lang.String,java.util.Date>
-     * @author: zhihao
+     * @author:
      * @date: 2020/4/14
      */
     @Bean
@@ -72,7 +72,7 @@ public class HttpMessageConverterConfig {
      *
      * @param source 日期字符串
      * @return java.time.LocalDateTime
-     * @author: zhihao
+     * @author:
      * @date: 2020/4/14
      */
     public LocalDateTime parse(String source) throws ParseException {
