@@ -5,7 +5,7 @@ Wuage是一个前后分离的基于角色权限控制的后台管理系统，目
 
 后端使用了：spring boot 、springmvc、 mybatis plus、shiro、ehcache
 
-演示地址：http://121.199.8.229/
+演示地址：http://49.234.56.103/
 
 
 
