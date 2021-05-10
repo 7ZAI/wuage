@@ -121,8 +121,6 @@
                 <version>${kaptcha.version}</version>
             </dependency>
 
-
-
             <!--getter setter 插件-->
             <dependency>
                 <groupId>org.projectlombok</groupId>

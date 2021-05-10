@@ -1,6 +1,5 @@
 package com.wuage.controller;
 
-
 import com.wuage.Result.ApiResult;
 import com.wuage.Result.ResultCode;
 import com.wuage.annotation.LogInfo;
@@ -37,9 +36,7 @@ public class SysMenuController extends BaseController {
 
         User loginuser = (User) SecurityUtils.getSubject().getPrincipal();
 
-
         if (superAdmins.isSuperAdmin(loginuser.getUserId())) {
-
             List<Menu> menus = menuService.getAllMenus(pageInfo);
             return new ApiResult(ResultCode.SUCCESS, menus);
         }

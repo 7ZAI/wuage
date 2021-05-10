@@ -49,20 +49,6 @@
             <artifactId>spring-boot-starter-validation</artifactId>
         </dependency>
 
-        <!--<dependency>-->
-            <!--<groupId>org.slf4j</groupId>-->
-            <!--<artifactId>slf4j-simple</artifactId>-->
-            <!--&lt;!&ndash;<version>1.7.25</version>&ndash;&gt;-->
-        <!--</dependency>-->
-
-        <!--<dependency>-->
-            <!--<groupId>org.slf4j</groupId>-->
-            <!--<artifactId>slf4j-log4j12</artifactId>-->
-            <!--<scope>compile</scope>-->
-        <!--</dependency>-->
-
-
-
         <!--common包-->
         <dependency>
             <groupId>com.wuage</groupId>

@@ -62,7 +62,6 @@ public class SysRoleController extends BaseController {
     @GetMapping("/role")
     public ApiResult getRoles(PageInfo pageInfo) throws Exception {
 
-//        System.out.println("查询角色session"+ SecurityUtils.getSubject().getSession().getId());
         Integer total = roleService.getTotal(pageInfo);
         JSONObject json = new JSONObject();
 
@@ -113,8 +112,6 @@ public class SysRoleController extends BaseController {
     @GetMapping("/role/menusSelected")
     @RequiresPermissions({"system:role:update"})
     public ApiResult getMenuSelected(@NotNull Integer roleId) throws Exception {
-
-//        User loginuser = (User) SecurityUtils.getSubject().getPrincipal();
 
         List<Integer> menuIds = roleService.getMenusRelation(roleId);
 

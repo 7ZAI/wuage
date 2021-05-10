@@ -33,7 +33,6 @@ import java.util.List;
 import java.util.Set;
 
 
-
 /**
  * 系统用户登录认证 授权
  */
@@ -57,9 +56,9 @@ public class SysUserRealm extends AuthorizingRealm {
      */
 
     @Override
-    protected AuthorizationInfo doGetAuthorizationInfo(PrincipalCollection principalCollection)  {
+    protected AuthorizationInfo doGetAuthorizationInfo(PrincipalCollection principalCollection) {
 
-        User user  = (User) SecurityUtils.getSubject().getPrincipal();
+        User user = (User) SecurityUtils.getSubject().getPrincipal();
         logger.info("---------------角色授权-------------------");
         SimpleAuthorizationInfo simpleAuthorizationInfo = new SimpleAuthorizationInfo();
         // 角色
@@ -67,12 +66,12 @@ public class SysUserRealm extends AuthorizingRealm {
         // 权限字符串
         Set<String> permissions = new HashSet<String>();
         try {
-            if(superAdmins.isSuperAdmin(user.getUserId())){
+            if (superAdmins.isSuperAdmin(user.getUserId())) {
                 roles.add("1");
                 permissions.add("*:*:*");
-            }else{
+            } else {
 
-                List<Role> roleList  = userMapper.getRolesById(user.getUserId());
+                List<Role> roleList = userMapper.getRolesById(user.getUserId());
                 for (Role role : roleList) {
                     roles.add(String.valueOf(role.getRoleId()));
                 }
@@ -80,7 +79,7 @@ public class SysUserRealm extends AuthorizingRealm {
                 List<String> permissionList = userMapper.getPermissionString(user.getUserId());
                 permissions.addAll(permissionList);
             }
-        }catch (Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
         }
 
@@ -117,8 +116,7 @@ public class SysUserRealm extends AuthorizingRealm {
 
             String captcha = (String) session.getAttribute(UserConstant.CAPTCHA_KEY);
 
-
-            logger.info("验证码校验：session:"+session.getId()+"验证码："+captcha + "----用户提交验证码："+code);
+            logger.info("验证码校验：session:" + session.getId() + "验证码：" + captcha + "----用户提交验证码：" + code);
 
             if (!code.equals(captcha)) {
                 throw new CaptchaException("验证码不正确！");
@@ -164,9 +162,9 @@ public class SysUserRealm extends AuthorizingRealm {
     /**
      * 清除角色权限缓存
      */
-    public void clearPermissinCache(Subject subject){
-        
-       clearCachedAuthorizationInfo(subject.getPrincipals());
+    public void clearPermissinCache(Subject subject) {
+
+        clearCachedAuthorizationInfo(subject.getPrincipals());
 //        clearCachedAuthorizationInfo(subject.getPrincipals());
     }
 }

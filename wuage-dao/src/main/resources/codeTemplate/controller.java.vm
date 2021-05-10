@@ -50,80 +50,79 @@ class ${table.controllerName}#if(${superControllerClass}) : ${superControllerCla
     public class ${table.controllerName} {
     #end
 
-            private ${table.serviceName} ${table.entityPath}Serivce;
+private ${table.serviceName} ${table.entityPath}Serivce;
 
-            @Autowired
-            public ${table.controllerName}( ${table.serviceName} ${table.entityPath}Serivce){
-                this.${table.entityPath}Serivce =  ${table.entityPath}Serivce;
-
-
-            }
+@Autowired
+public ${table.controllerName}( ${table.serviceName} ${table.entityPath}Serivce){
+        this.${table.entityPath}Serivce=  ${table.entityPath}Serivce;
 
 
-            /**
-            * 列表查询
-            * @param pageInfo
-            * @return
-            * @throws Exception
-            */
-            @RequiresPermissions("system:${table.entityPath}:view")
-            @GetMapping("/${table.entityPath}")
-            public ApiResult get${entity}s(PageInfo pageInfo) throws Exception {
+        }
 
 
-
-                    List<${entity}> ${entity}s = ${table.entityPath}Serivce.get${entity}s(pageInfo);
-                    JSONObject json = new JSONObject();
-                    json.put(" ${entity}", ${entity}s);
-
-
-                    return new ApiResult(ResultCode.SUCCESS, json);
-
-            }
-
-            /**
-            * 添加$!{table.comment}
-            * @param
-            * @return
-            * @throws Exception
-            */
-            @RepeatSubmit
-            @PostMapping("/${table.entityPath}")
-            @RequiresPermissions("system:${table.entityPath}:add")
-            public ApiResult add(@Validated ${entity} ${table.entityPath}) throws Exception {
+/**
+* 列表查询
+* @param pageInfo
+* @return
+* @throws Exception
+*/
+@RequiresPermissions("system:${table.entityPath}:view")
+@GetMapping("/${table.entityPath}")
+public ApiResult get${entity}s(PageInfo pageInfo)throws Exception{
 
 
-                        return  ${table.entityPath}Serivce.add${entity}(${table.entityPath});
+        List<${entity}> ${entity}s= ${table.entityPath}Serivce.get${entity}s(pageInfo);
+        JSONObject json=new JSONObject();
+        json.put(" ${entity}", ${entity}s);
 
-            }
 
-            /**
-            * 删除$!{table.comment}
-            * @param
-            * @return
-            * @throws Exception
-            */
-            @DeleteMapping("/${table.entityPath}/${table.entityPath}Id}")
-            @RequiresPermissions("system:${table.entityPath}:delete")
-            public ApiResult delete(@PathVariable @NotNull Integer ${table.entityPath}Id) throws Exception {
+        return new ApiResult(ResultCode.SUCCESS,json);
 
-                    return ${table.entityPath}Serivce.delete${entity}(${table.entityPath}Id);
+        }
 
-            }
+/**
+ * 添加$!{table.comment}
+ * @param
+ * @return
+ * @throws Exception
+ */
+@RepeatSubmit
+@PostMapping("/${table.entityPath}")
+@RequiresPermissions("system:${table.entityPath}:add")
+public ApiResult add(@Validated ${entity} ${table.entityPath})throws Exception{
 
-            /**
-            * 更新$!{table.comment}
-            * @param
-            * @return
-            * @throws Exception
-            */
-            @RepeatSubmit
-            @PutMapping("/${table.entityPath}/")
-            @RequiresPermissions("system:${table.entityPath}:update")
-            public ApiResult update(${entity} ${table.entityPath}) throws Exception {
 
-                    return ${table.entityPath}Serivce.update${entity} (${table.entityPath});
-            }
+        return  ${table.entityPath}Serivce.add${entity}(${table.entityPath});
+
+        }
+
+/**
+ * 删除$!{table.comment}
+ * @param
+ * @return
+ * @throws Exception
+ */
+@DeleteMapping("/${table.entityPath}/${table.entityPath}Id}")
+@RequiresPermissions("system:${table.entityPath}:delete")
+public ApiResult delete(@PathVariable @NotNull Integer ${table.entityPath}Id)throws Exception{
+
+        return ${table.entityPath}Serivce.delete${entity}(${table.entityPath}Id);
+
+        }
+
+/**
+ * 更新$!{table.comment}
+ * @param
+ * @return
+ * @throws Exception
+ */
+@RepeatSubmit
+@PutMapping("/${table.entityPath}/")
+@RequiresPermissions("system:${table.entityPath}:update")
+public ApiResult update(${entity} ${table.entityPath})throws Exception{
+
+        return ${table.entityPath}Serivce.update${entity} (${table.entityPath});
+        }
 
 
         }

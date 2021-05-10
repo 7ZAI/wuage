@@ -35,12 +35,10 @@ public class SysUserController extends BaseController {
 
     @Autowired
     private UserService userService;
-
     @Autowired
     private SuperAdmins superAdmins;
     @Autowired
     private EhCacheManager ehCacheManager;
-
 
 
     /**
@@ -54,8 +52,6 @@ public class SysUserController extends BaseController {
     @GetMapping(value = "/user")
     public ApiResult getUsers(PageInfo pageInfo, @RequestParam(value = "depts") List<Integer> depts) throws Exception {
 
-
-// System.out.println("查询用户session"+ SecurityUtils.getSubject().getSession().getId());
         return userService.getUsers(pageInfo,depts);
     }
 

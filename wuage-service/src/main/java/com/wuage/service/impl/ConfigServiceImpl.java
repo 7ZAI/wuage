@@ -1,7 +1,6 @@
 package com.wuage.service.impl;
 
 
-import com.wuage.controller.BaseController;
 import com.wuage.entity.Config;
 import com.wuage.mapper.ConfigMapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;

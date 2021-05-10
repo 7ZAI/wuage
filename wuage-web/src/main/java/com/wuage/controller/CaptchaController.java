@@ -31,7 +31,6 @@ public class CaptchaController extends BaseController {
     public void getCaptchaImage(HttpServletRequest request, HttpServletResponse response) throws Exception {
         ServletOutputStream sos = null;
         try {
-//            HttpSession session = request.getSession();
             Session session = SecurityUtils.getSubject().getSession();
 //            System.out.println("session2" + session2.getId());
             //设置缓存控制 可以设置Pragma 或Cache-Control 这里设置为不缓存
@@ -49,7 +48,6 @@ public class CaptchaController extends BaseController {
             BufferedImage codeImage = captchaProducer.createImage(code);
             sos = response.getOutputStream();
             ImageIO.write(codeImage, "jpg", sos);
-            logger.info("生产的session Id ---- "+ session.getId() +"验证码为："+ code);
             sos.flush();
 
         } catch (Exception e) {

@@ -1,7 +1,5 @@
 package com.wuage.controller;
 
-import com.alibaba.fastjson.JSONObject;
-import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.wuage.Result.ApiResult;
 import com.wuage.Result.ResultCode;
 import com.wuage.annotation.LogInfo;
@@ -10,13 +8,11 @@ import com.wuage.component.SuperAdmins;
 import com.wuage.component.SysConfigMap;
 
 import com.wuage.constant.SysConfigConstant;
-import com.wuage.entity.Config;
 import com.wuage.entity.User;
 import com.wuage.service.ConfigService;
 import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.HashMap;
@@ -52,7 +48,6 @@ public class SysConfigController extends BaseController {
 
         Integer sysMode =  configMap.get(SysConfigConstant.SYSTEM_MODE);
         User currentUser = (User) SecurityUtils.getSubject().getPrincipal();
-
         if(SysConfigConstant.MODE_SHOW.equals(sysMode) && !superAdmins.isSuperAdmin(currentUser.getUserId())){
 
             return new ApiResult(ResultCode.SHOW_MODE_FORBIDDEN);
