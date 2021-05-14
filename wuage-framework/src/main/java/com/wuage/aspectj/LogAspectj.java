@@ -5,7 +5,6 @@ import com.wuage.annotation.LogInfo;
 import com.wuage.constant.GlobalConstants;
 import com.wuage.entity.Log;
 import com.wuage.entity.User;
-import com.wuage.enums.LogType;
 import com.wuage.enums.OperateType;
 import com.wuage.service.LogService;
 import com.wuage.utils.DateUtils;
@@ -25,7 +24,6 @@ import javax.servlet.http.HttpServletRequest;
 import java.lang.reflect.Method;
 import java.util.Map;
 import java.util.Objects;
-import java.util.concurrent.TimeUnit;
 
 /**
  * 日志切面
