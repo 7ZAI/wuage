@@ -5,19 +5,25 @@ import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.wuage.Result.ApiResult;
+import com.wuage.Result.ResultCode;
 import com.wuage.constant.RoleConstatnt;
+import com.wuage.entity.Dept;
+import com.wuage.entity.Menu;
 import com.wuage.entity.Role;
 import com.wuage.entity.User;
 import com.wuage.entity.Vo.PageInfo;
+import com.wuage.mapper.MenuMapper;
 import com.wuage.mapper.RoleMapper;
+import com.wuage.service.DeptService;
 import com.wuage.service.RoleService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.wuage.utils.DateUtils;
+import component.SuperAdmins;
 import org.apache.shiro.SecurityUtils;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.annotation.Resource;
 import java.util.List;
 import java.util.Objects;
 
@@ -32,14 +38,26 @@ import java.util.Objects;
 @Service
 public class RoleServiceImpl extends ServiceImpl<RoleMapper, Role> implements RoleService {
 
-    @Autowired
+    @Resource
     private RoleMapper roleMapper;
-
+    @Resource
+    private SuperAdmins superAdmins;
+    @Resource
+    private MenuMapper menuMapper;
+    @Resource
+    private DeptService deptService;
 
     @Override
-    public List<Role> getRoles(PageInfo pageInfo) throws Exception {
+    public ApiResult getRoles(PageInfo pageInfo) throws Exception {
 
-        return roleMapper.getRolesByConidition(pageInfo);
+        Integer total = roleMapper.getTotal(pageInfo);
+        JSONObject json = new JSONObject();
+        List<Role> roles = roleMapper.getRolesByConidition(pageInfo);
+
+        json.put("roles", roles);
+        json.put("total", total);
+
+        return new ApiResult(ResultCode.SUCCESS, json);
     }
 
 
@@ -50,25 +68,11 @@ public class RoleServiceImpl extends ServiceImpl<RoleMapper, Role> implements Ro
 
 
     @Override
-    public List<Integer> getMenusRelation(Integer roleId) throws Exception {
-        return roleMapper.getMenusRelation(roleId);
+    public ApiResult getMenusRelation(Integer roleId) throws Exception {
+        List<Integer> menuIds = roleMapper.getMenusRelation(roleId);
+        return new ApiResult(ResultCode.SUCCESS, menuIds);
     }
 
-
-    @Override
-    public Integer saveRoleDeptsRelation(List<Integer> depts, Integer roleId) throws Exception {
-        return roleMapper.saveRoleDeptRelation(depts, roleId);
-    }
-
-    @Override
-    public List<Integer> getDeptRelationByRoleId(Integer roleId) throws Exception {
-        return roleMapper.getDeptRelationByRoleId(roleId);
-    }
-
-    @Override
-    public Integer getTotal(PageInfo pageInfo) throws Exception {
-        return roleMapper.getTotal(pageInfo);
-    }
 
     /**
      * 添加角色
@@ -80,6 +84,21 @@ public class RoleServiceImpl extends ServiceImpl<RoleMapper, Role> implements Ro
     @Transactional(rollbackFor = Exception.class)
     @Override
     public ApiResult addRole(Role role) throws Exception {
+
+
+        String roleName = role.getRoleName().trim();
+
+        role.setRoleName(roleName);
+
+        if (this.roleNameIsExit(roleName) > 0) {
+
+            return ApiResult.fail("已存在该角色名称！");
+        }
+
+        if ("".equals(roleName)) {
+            return ApiResult.fail("非法参数！");
+        }
+
 
         User user = (User) SecurityUtils.getSubject().getPrincipal();
         Integer[] menuIds = role.getMenuIds();
@@ -196,7 +215,7 @@ public class RoleServiceImpl extends ServiceImpl<RoleMapper, Role> implements Ro
             List<String> oldPermissin = roleMapper.getPermissionByRoleId(role.getRoleId());
 
             roleMapper.deleteRoleMenuRelation(role.getRoleId());
-            if(!Objects.isNull(role.getMenuIds()) && role.getMenuIds().length>0){
+            if (!Objects.isNull(role.getMenuIds()) && role.getMenuIds().length > 0) {
 
                 roleMapper.saveRoleMenuRelation(role.getRoleId(), role.getMenuIds());
             }
@@ -211,6 +230,7 @@ public class RoleServiceImpl extends ServiceImpl<RoleMapper, Role> implements Ro
 
     /**
      * 启用禁用角色
+     *
      * @param role
      * @return
      * @throws Exception
@@ -243,6 +263,7 @@ public class RoleServiceImpl extends ServiceImpl<RoleMapper, Role> implements Ro
 
     /**
      * 更改数据范围权限
+     *
      * @param json
      * @return
      * @throws Exception
@@ -277,5 +298,36 @@ public class RoleServiceImpl extends ServiceImpl<RoleMapper, Role> implements Ro
             }
         }
         return ApiResult.success();
+    }
+
+    @Override
+    public ApiResult getMenuPermissions() throws Exception {
+
+        User loginuser = (User) SecurityUtils.getSubject().getPrincipal();
+        List<Menu> menus;
+        PageInfo pageInfo = new PageInfo();
+
+        if (superAdmins.isSuperAdmin(loginuser.getUserId())) {
+            menus = menuMapper.getAllMenus(pageInfo);
+            return new ApiResult(ResultCode.SUCCESS, menus);
+        }
+
+        menus = menuMapper.getMenuByRole(loginuser.getUserId(), pageInfo);
+
+        return new ApiResult(ResultCode.SUCCESS, menus);
+    }
+
+    @Override
+    public ApiResult getSelectedDepts(Integer roleId) throws Exception {
+
+        List<Integer> deptSelectedIds = roleMapper.getDeptRelationByRoleId(roleId);
+        return new ApiResult(ResultCode.SUCCESS, deptSelectedIds);
+    }
+
+    @Override
+    public ApiResult getDepartmentTree() throws Exception {
+        PageInfo pageInfo = new PageInfo();
+        List<Dept> departments = deptService.getAllDepartments(pageInfo);
+        return new ApiResult(ResultCode.SUCCESS, departments);
     }
 }

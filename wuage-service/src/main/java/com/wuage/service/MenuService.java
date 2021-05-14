@@ -22,7 +22,7 @@ public interface MenuService extends IService<Menu> {
 
     List<Menu> getAllMenus(PageInfo pageInfo) throws Exception;
 
-    List<Menu> getMenuByRole(Integer userId,PageInfo pageInfo) throws Exception;
+    ApiResult getMenuByRole(PageInfo pageInfo) throws Exception;
 
     ApiResult addMenu(Menu menu) throws Exception;
 

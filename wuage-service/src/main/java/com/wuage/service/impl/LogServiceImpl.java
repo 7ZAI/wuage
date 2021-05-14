@@ -2,6 +2,7 @@ package com.wuage.service.impl;
 
 import java.util.List;
 
+import com.alibaba.fastjson.JSONObject;
 import com.wuage.Result.ApiResult;
 import com.wuage.entity.Vo.PageInfo;
 
@@ -12,6 +13,8 @@ import com.wuage.mapper.LogMapper;
 import com.wuage.service.LogService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.springframework.stereotype.Service;
+
+import javax.annotation.Resource;
 
 /**
  * <p>
@@ -24,10 +27,8 @@ import org.springframework.stereotype.Service;
 @Service
 public class LogServiceImpl extends ServiceImpl<LogMapper, Log> implements LogService {
 
-    @Autowired
+    @Resource
     private LogMapper logMapper;
-
-
     /**
      * 查询系统日志
      *
@@ -36,9 +37,15 @@ public class LogServiceImpl extends ServiceImpl<LogMapper, Log> implements LogSe
      * @throws Exception
      */
     @Override
-    public List<Log> getLogs(PageInfo pageInfo) throws Exception {
+    public ApiResult getLogs(PageInfo pageInfo) throws Exception {
+        List<Log> logs = logMapper.getLogs(pageInfo);
+        Integer total = logMapper.getLogsTotal(pageInfo);
 
-        return logMapper.getLogs(pageInfo);
+        JSONObject json = new JSONObject();
+        json.put("logs", logs);
+        json.put("total", total);
+
+        return ApiResult.success().setData(json);
     }
 
     @Override
@@ -64,7 +71,6 @@ public class LogServiceImpl extends ServiceImpl<LogMapper, Log> implements LogSe
     }
 
 
-
     /**
      * 删除系统日志
      *
@@ -80,7 +86,6 @@ public class LogServiceImpl extends ServiceImpl<LogMapper, Log> implements LogSe
 
         return ApiResult.success();
     }
-
 
 
     /**

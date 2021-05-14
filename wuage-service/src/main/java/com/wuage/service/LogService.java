@@ -20,7 +20,7 @@ import com.baomidou.mybatisplus.extension.service.IService;
  */
 public interface LogService extends IService<Log> {
 
-    List<Log> getLogs(PageInfo pageInfo) throws Exception;
+    ApiResult getLogs(PageInfo pageInfo) throws Exception;
 
     Integer getLogsTotal(PageInfo pageInfo) throws Exception;
 

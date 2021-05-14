@@ -1,8 +1,6 @@
 package com.wuage.shiro.Realm;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
-import com.google.code.kaptcha.Constants;
-import com.wuage.component.SuperAdmins;
 import com.wuage.component.SysConfigMap;
 import com.wuage.constant.SysConfigConstant;
 import com.wuage.constant.UserConstant;
@@ -10,10 +8,9 @@ import com.wuage.entity.Role;
 import com.wuage.entity.User;
 import com.wuage.exception.customize.CaptchaException;
 import com.wuage.mapper.UserMapper;
-import com.wuage.service.UserService;
 import com.wuage.shiro.token.UsernamePasswordCaptchaToken;
 import com.wuage.utils.DateUtils;
-import com.wuage.utils.ServletUtils;
+import component.SuperAdmins;
 import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.authc.*;
 import org.apache.shiro.authz.AuthorizationInfo;
@@ -27,7 +24,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import javax.servlet.http.HttpSession;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;

@@ -22,8 +22,7 @@
             <optional>true</optional> <!-- 表示依赖不会传递 -->
         </dependency>
 
-
-
+        <!--导入dao层-->
         <dependency>
             <groupId>com.wuage</groupId>
             <artifactId>wuage-framework</artifactId>

@@ -1,22 +1,13 @@
 package com.wuage.controller;
 
-import com.alibaba.fastjson.JSONObject;
 import com.wuage.Result.ApiResult;
-import com.wuage.Result.ResultCode;
-import com.wuage.annotation.RepeatSubmit;
-import com.wuage.entity.Log;
 import com.wuage.service.LogService;
 import com.wuage.entity.Vo.PageInfo;
-
-import io.swagger.models.auth.In;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.*;
+import javax.annotation.Resource;
 
-import javax.validation.constraints.NotNull;
-import java.util.List;
 
 import org.springframework.web.bind.annotation.RestController;
 
@@ -33,15 +24,8 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/system")
 public class LogController extends BaseController {
 
+    @Resource
     private LogService logSerivce;
-
-    @Autowired
-    public LogController(LogService logSerivce) {
-        this.logSerivce = logSerivce;
-
-
-    }
-
 
     /**
      * 列表查询
@@ -53,15 +37,7 @@ public class LogController extends BaseController {
     @RequiresPermissions("system:log:view")
     @GetMapping("/log")
     public ApiResult getLogs(PageInfo pageInfo) throws Exception {
-
-        List<Log> logs = logSerivce.getLogs(pageInfo);
-        Integer total = logSerivce.getLogsTotal(pageInfo);
-        JSONObject json = new JSONObject();
-        json.put("logs", logs);
-        json.put("total", total);
-
-        return  ApiResult.success().setData(json);
-
+        return logSerivce.getLogs(pageInfo);
     }
 
     /**

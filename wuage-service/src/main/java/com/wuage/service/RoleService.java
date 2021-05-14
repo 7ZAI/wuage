@@ -19,17 +19,11 @@ import java.util.List;
  */
 public interface RoleService extends IService<Role> {
 
-    List<Role> getRoles(PageInfo pageInfo) throws Exception;
+    ApiResult getRoles(PageInfo pageInfo) throws Exception;
 
     Integer roleNameIsExit(String roleName) throws Exception;
 
-    List<Integer> getMenusRelation(Integer roleId) throws Exception;
-
-    Integer saveRoleDeptsRelation(List<Integer> depts, Integer roleId) throws Exception;
-
-    List<Integer> getDeptRelationByRoleId(Integer roleId) throws Exception;
-
-    Integer getTotal(PageInfo pageInfo) throws Exception;
+    ApiResult getMenusRelation(Integer roleId) throws Exception;
 
     ApiResult addRole(Role role) throws Exception;
 
@@ -42,4 +36,10 @@ public interface RoleService extends IService<Role> {
     ApiResult updateRoleStatus(Role role) throws Exception;
 
     ApiResult updateDataRange(JSONObject json) throws Exception;
+
+    ApiResult getMenuPermissions() throws Exception;
+
+    ApiResult getSelectedDepts(Integer roleId) throws Exception;
+
+    ApiResult getDepartmentTree() throws Exception;
 }

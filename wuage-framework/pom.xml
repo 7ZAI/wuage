@@ -15,8 +15,6 @@
 
     <dependencies>
 
-        <!--导入dao层-->
-
         <dependency>
             <groupId>com.wuage</groupId>
             <artifactId>wuage-service</artifactId>
@@ -92,7 +90,6 @@
             <groupId>com.github.penggle</groupId>
             <artifactId>kaptcha</artifactId>
         </dependency>
-
 
         <dependency>
             <groupId>io.springfox</groupId>

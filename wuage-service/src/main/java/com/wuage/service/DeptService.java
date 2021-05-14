@@ -18,8 +18,6 @@ import java.util.List;
  */
 public interface DeptService extends IService<Dept> {
 
-    Integer hasChildren(Integer deptId) throws Exception;
-
     List<Dept> getAllDepartments(PageInfo pageInfo) throws Exception;
 
     List<Dept> getDeptFathers(Integer deptId) throws Exception;
@@ -30,5 +28,7 @@ public interface DeptService extends IService<Dept> {
 
     ApiResult updateDept(Dept dept) throws Exception;
 
-    ApiResult deleteDept( Integer id)throws Exception;
+    ApiResult deleteDept(Integer id) throws Exception;
+
+    ApiResult getDepartments(PageInfo pageInfo) throws Exception;
 }

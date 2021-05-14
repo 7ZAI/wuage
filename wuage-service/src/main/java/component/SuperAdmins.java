@@ -1,11 +1,11 @@
-package com.wuage.component;
+package component;
 
 
 import com.wuage.mapper.UserMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-import javax.annotation.PostConstruct;
 
+import javax.annotation.PostConstruct;
 import java.util.List;
 import java.util.Objects;
 

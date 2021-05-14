@@ -3,6 +3,7 @@ package com.wuage.service.impl;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.wuage.Result.ApiResult;
+import com.wuage.Result.ResultCode;
 import com.wuage.entity.Menu;
 import com.wuage.entity.User;
 import com.wuage.entity.Vo.PageInfo;
@@ -10,6 +11,7 @@ import com.wuage.mapper.MenuMapper;
 import com.wuage.service.MenuService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.wuage.utils.DateUtils;
+import component.SuperAdmins;
 import org.apache.shiro.SecurityUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -33,6 +35,9 @@ public class MenuServiceImpl extends ServiceImpl<MenuMapper, Menu> implements Me
     @Autowired
     private MenuMapper menuMapper;
 
+    @Autowired
+    private SuperAdmins superAdmins;
+
     @Override
     public List<Menu> getMenusByUserId(Integer userId) throws Exception {
 
@@ -50,11 +55,19 @@ public class MenuServiceImpl extends ServiceImpl<MenuMapper, Menu> implements Me
     }
 
     @Override
-    public List<Menu> getMenuByRole(Integer userId, PageInfo pageInfo) throws Exception {
-        List<Menu> menus = menuMapper.getMenuByRole(userId, pageInfo);
+    public ApiResult getMenuByRole( PageInfo pageInfo) throws Exception {
+
+        User loginuser = (User) SecurityUtils.getSubject().getPrincipal();
+
+        if (superAdmins.isSuperAdmin(loginuser.getUserId())) {
+            List<Menu> menus = this.getAllMenus(pageInfo);
+            return new ApiResult(ResultCode.SUCCESS, menus);
+        }
+
+        List<Menu> menus = menuMapper.getMenuByRole(loginuser.getUserId(), pageInfo);
         handlerMenuTree(menus);
 
-        return menus;
+        return new ApiResult(ResultCode.SUCCESS, menus);
     }
 
     /**

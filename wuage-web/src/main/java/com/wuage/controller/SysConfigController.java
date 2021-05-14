@@ -4,12 +4,12 @@ import com.wuage.Result.ApiResult;
 import com.wuage.Result.ResultCode;
 import com.wuage.annotation.LogInfo;
 import com.wuage.annotation.RepeatSubmit;
-import com.wuage.component.SuperAdmins;
 import com.wuage.component.SysConfigMap;
 
 import com.wuage.constant.SysConfigConstant;
 import com.wuage.entity.User;
 import com.wuage.service.ConfigService;
+import component.SuperAdmins;
 import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.springframework.beans.factory.annotation.Autowired;

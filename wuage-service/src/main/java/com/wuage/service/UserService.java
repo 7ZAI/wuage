@@ -24,18 +24,15 @@ import java.util.Set;
  */
 public interface UserService extends IService<User> {
 
-
     List<Role> getRolesByUserId(Integer userId) throws Exception;
 
     List<Integer> getSuperAdminIds() throws Exception;
-
-    ApiResult addUser(User currentUser,User user) throws Exception;
 
     ApiResult deleteUser( Integer id) throws Exception;
 
     ApiResult deleteUserBatch(List<Integer> userIds) throws Exception;
 
-    ApiResult updateUser(User currentUser, User user) throws Exception;
+    ApiResult updateUser(User user) throws Exception;
 
     ApiResult updateUserLocked(Integer userId,  Integer lockedStatus) throws Exception;
 
@@ -44,4 +41,6 @@ public interface UserService extends IService<User> {
     ApiResult getUserRelaRolesAndDeptName( Integer deptId, Integer userId) throws Exception;
 
     ApiResult getPreparedData() throws Exception;
+
+    ApiResult add(User user) throws Exception;
 }

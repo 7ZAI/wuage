@@ -1,10 +1,13 @@
 package com.wuage.service.impl;
 
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.wuage.Result.ApiResult;
+import com.wuage.Result.ResultCode;
 import com.wuage.entity.Dept;
 import com.wuage.entity.User;
 import com.wuage.entity.Vo.PageInfo;
 import com.wuage.mapper.DeptMapper;
+import com.wuage.mapper.UserMapper;
 import com.wuage.service.DeptService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.wuage.utils.DateUtils;
@@ -13,6 +16,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.annotation.Resource;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -28,13 +32,11 @@ import java.util.Objects;
 @Service
 public class DeptServiceImpl extends ServiceImpl<DeptMapper, Dept> implements DeptService {
 
-    @Autowired
+    @Resource
     private DeptMapper deptMapper;
 
-    @Override
-    public Integer hasChildren(Integer deptId) throws Exception {
-        return deptMapper.hasChildren(deptId);
-    }
+    @Resource
+    private UserMapper userMapper;
 
     @Override
     public List<Dept> getAllDepartments(PageInfo pageInfo) throws Exception {
@@ -109,8 +111,34 @@ public class DeptServiceImpl extends ServiceImpl<DeptMapper, Dept> implements De
     @Override
     public ApiResult deleteDept(Integer id) throws Exception {
 
+        Dept dept = deptMapper.selectById(id);
+
+        if(Objects.isNull(dept)){
+            return  new ApiResult(ResultCode.ILLEGAL_PARAMETER);
+        }
+
+        if(deptMapper.hasChildren(id)>0){
+            return  ApiResult.fail("该部门存在子部门，无法删除!");
+        }
+
+        List<User> users =  userMapper.selectList(new QueryWrapper<User>()
+                .lambda().eq(User::getDeptId, dept.getDeptId()));
+
+        if(!users.isEmpty()){
+            return ApiResult.fail("仍有用户属于该部门，无法删除！");
+        }
        deptMapper.deleteById(id);
        return ApiResult.success();
+    }
+
+    @Override
+    public ApiResult getDepartments(PageInfo pageInfo) throws Exception {
+
+        List<Dept> depts = deptMapper.getAllDepartments(pageInfo);
+
+        handlerDeptTree(depts);
+
+        return new ApiResult(ResultCode.SUCCESS,depts);
     }
 
     /**

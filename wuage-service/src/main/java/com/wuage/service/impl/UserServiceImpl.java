@@ -10,6 +10,7 @@ import com.wuage.Result.ApiResult;
 import com.wuage.Result.ResultCode;
 import com.wuage.constant.RoleConstatnt;
 import com.wuage.constant.SysConfigConstant;
+import com.wuage.constant.UserConstant;
 import com.wuage.entity.Dept;
 import com.wuage.entity.Role;
 import com.wuage.entity.User;
@@ -22,14 +23,17 @@ import com.wuage.service.UserService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.wuage.utils.DateUtils;
 import com.wuage.utils.security.RandomUtils;
+import component.SuperAdmins;
+import net.sf.ehcache.Ehcache;
 import org.apache.shiro.SecurityUtils;
+import org.apache.shiro.cache.ehcache.EhCacheManager;
 import org.apache.shiro.crypto.hash.Md5Hash;
 import org.apache.shiro.crypto.hash.SimpleHash;
 import org.apache.shiro.util.ByteSource;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.annotation.Resource;
 import java.util.*;
 
 /**
@@ -43,18 +47,19 @@ import java.util.*;
 @Service
 public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements UserService {
 
-    @Autowired
+    @Resource
     private UserMapper userMapper;
-
-    @Autowired
+    @Resource
     private DeptMapper deptMapper;
-
-    @Autowired
+    @Resource
     private DeptService deptService;
-
-
-    @Autowired
+    @Resource
+    private SuperAdmins superAdmins;
+    @Resource
     private RoleService roleService;
+    @Resource
+    private EhCacheManager ehCacheManager;
+
 
 
     @Override
@@ -69,43 +74,6 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
         return userMapper.getSuperAdminIds();
     }
 
-    /**
-     * 添加用户
-     *
-     * @param user
-     * @return
-     * @throws Exception
-     */
-    @Transactional(rollbackFor = Exception.class)
-    @Override
-    public ApiResult addUser(User currentUser, User user) throws Exception {
-
-        user.setCtime(DateUtils.getNowDate());
-        String salt = RandomUtils.getSalt(8);
-        user.setPassword(SysConfigConstant.USER_DEFAULT_PASSWORD);
-        user.setSalt(salt);
-        user.setCreater(currentUser.getUsername());
-
-        ByteSource bytesalt = new Md5Hash(salt);
-        SimpleHash simpleHash = new SimpleHash("md5", user.getPassword(), bytesalt, 2);
-
-        user.setPassword(simpleHash.toHex());
-        userMapper.insert(user);
-        List<Integer> roleList = user.getRoles();
-
-        if (!Objects.isNull(roleList) && !roleList.isEmpty()) {
-            try {
-                userMapper.insertUserRole(user.getUserId(), roleList);
-            } catch (Exception e) {
-                throw new Exception("插入角色用户关系数据异常！");
-            }
-        }
-        JSONObject jsonObject = new JSONObject();
-        jsonObject.put("uid",user.getUserId());
-        jsonObject.put("ctime",user.getCtime());
-
-        return ApiResult.success().setData(jsonObject);
-    }
 
     /**
      * 删除单个用户
@@ -118,9 +86,13 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
     @Override
     public ApiResult deleteUser(Integer id) throws Exception {
 
+        if (superAdmins.isSuperAdmin(id)) {
+            return ApiResult.fail("该用户是超级管理员无法删除!");
+        }
+
+
         userMapper.deleteById(id);
         userMapper.deleteUserRoleRelations(id);
-//        int k = 3 / 0;
         return ApiResult.success();
     }
 
@@ -135,23 +107,54 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
     @Override
     public ApiResult deleteUserBatch(List<Integer> userIds) throws Exception {
 
-        userMapper.deleteBatchIds(userIds);
-        userMapper.deleteUserRoleRelationBatch(userIds);
+        if (!Objects.isNull(userIds) && userIds.size() > 0) {
 
-        return ApiResult.success();
+            for (Integer userid : userIds) {
+                if (superAdmins.isSuperAdmin(userid)) {
+                    return ApiResult.fail("无法删除超级管理员！");
+                }
+            }
+            userMapper.deleteBatchIds(userIds);
+            userMapper.deleteUserRoleRelationBatch(userIds);
+
+            return ApiResult.success();
+        }
+
+
+        return ApiResult.fail("删除失败！");
     }
 
     /**
      * 更新用户
      *
-     * @param currentUser
      * @param user
      * @return
      * @throws Exception
      */
     @Transactional(rollbackFor = Exception.class)
     @Override
-    public ApiResult updateUser(User currentUser, User user) throws Exception {
+    public ApiResult updateUser( User user) throws Exception {
+
+        User currentUser = (User) SecurityUtils.getSubject().getPrincipal();
+        Integer updateUserId = user.getUserId();
+        User oldUser = userMapper.selectById(updateUserId);
+
+        if (superAdmins.isSuperAdmin(updateUserId) && !superAdmins.isSuperAdmin(currentUser.getUserId())) {
+            return ApiResult.fail("没有操作超级管理员的权限！");
+        }
+
+        //locked 有三种状态 但在前端只表现为两种 所以要处理一下
+        if (user.getLocked().equals(UserConstant.USER_NORMAL) &&
+                oldUser.getLocked().equals(UserConstant.USER_DISABLE_BY_ERROR_PASSWORD)) {
+
+            Ehcache passwordRetryCache = ehCacheManager.getCacheManager().getCache("passwordRetryCache");
+            passwordRetryCache.remove(user.getLoginName());
+        }
+
+        if (user.getLocked().equals(UserConstant.USER_DISABLE_BY_ADMIN) &&
+                oldUser.getLocked().equals(UserConstant.USER_DISABLE_BY_ERROR_PASSWORD)) {
+            user.setLocked(UserConstant.USER_DISABLE_BY_ERROR_PASSWORD);
+        }
 
         user.setUpdateBy(currentUser.getLoginName());
         user.setUpdateTime(DateUtils.getNowDate());
@@ -165,6 +168,8 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
         } else {
             userMapper.deleteUserRoleRelations(user.getUserId());
         }
+
+        superAdmins.refresh();
 
         return ApiResult.success();
     }
@@ -180,6 +185,36 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
     @Transactional(rollbackFor = Exception.class)
     @Override
     public ApiResult updateUserLocked(Integer userId, Integer lockedStatus) throws Exception {
+
+
+        if (lockedStatus < UserConstant.USER_NORMAL || lockedStatus > UserConstant.USER_DISABLE_BY_ERROR_PASSWORD) {
+            return ApiResult.fail("非法参数！");
+        }
+
+        User currentUser = (User) SecurityUtils.getSubject().getPrincipal();
+
+        User oldUser = userMapper.selectById(userId);
+
+        if(superAdmins.isSuperAdmin(userId) && !superAdmins.isSuperAdmin(currentUser.getUserId())){
+            return ApiResult.fail("没有锁定超级管理员的权限！");
+        }
+
+        if (Objects.isNull(oldUser)) {
+            return  new ApiResult(ResultCode.USER_NOT_EXITS);
+        }
+
+        if (lockedStatus.equals(UserConstant.USER_NORMAL) &&
+                oldUser.getLocked().equals(UserConstant.USER_DISABLE_BY_ERROR_PASSWORD)) {
+
+            Ehcache passwordRetryCache = ehCacheManager.getCacheManager().getCache("passwordRetryCache");
+            passwordRetryCache.remove(oldUser.getLoginName());
+        }
+
+        if (lockedStatus.equals(UserConstant.USER_DISABLE_BY_ADMIN) &&
+                oldUser.getLocked().equals(UserConstant.USER_DISABLE_BY_ERROR_PASSWORD)) {
+
+            lockedStatus = UserConstant.USER_DISABLE_BY_ERROR_PASSWORD;
+        }
 
         this.update(new UpdateWrapper<User>()
                 .lambda().eq(User::getUserId, userId).set(User::getLocked, lockedStatus));
@@ -223,6 +258,11 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
     @Override
     public ApiResult getUserRelaRolesAndDeptName(Integer deptId, Integer userId) throws Exception {
 
+        User currentUser = (User) SecurityUtils.getSubject().getPrincipal();
+
+        if(superAdmins.isSuperAdmin(userId) && !superAdmins.isSuperAdmin(currentUser.getUserId())){
+            return ApiResult.fail("没有操作超级管理员的权限！");
+        }
 
         Dept dept = deptMapper.selectById(deptId);
         List<Role> roles = userMapper.getRolesById(userId);
@@ -237,6 +277,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
 
     /**
      * 第一次加载页面 所需数据
+     *
      * @return
      * @throws Exception
      */
@@ -281,6 +322,49 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
         json.put("rolesOptions", listroles);
 
         return new ApiResult(ResultCode.SUCCESS, json);
+    }
+
+    @Transactional(rollbackFor = Exception.class)
+    @Override
+    public ApiResult add(User user) throws Exception {
+        User currentUser = (User) SecurityUtils.getSubject().getPrincipal();
+        String loginName = user.getLoginName();
+
+        User checkuser = userMapper.selectOne(new QueryWrapper<User>().lambda()
+                .eq(User::getLoginName, loginName));
+
+        if (!Objects.isNull(checkuser)) {
+            return ApiResult.fail(ResultCode.USERNAME_ALREADY_EXITS.getMsg());
+        }
+
+        user.setCtime(DateUtils.getNowDate());
+
+        String salt = RandomUtils.getSalt(8);
+        user.setPassword(SysConfigConstant.USER_DEFAULT_PASSWORD);
+        user.setSalt(salt);
+        user.setCreater(currentUser.getUsername());
+
+        ByteSource bytesalt = new Md5Hash(salt);
+        SimpleHash simpleHash = new SimpleHash("md5", user.getPassword(), bytesalt, 2);
+
+        user.setPassword(simpleHash.toHex());
+        userMapper.insert(user);
+        List<Integer> roleList = user.getRoles();
+
+        if (!Objects.isNull(roleList) && !roleList.isEmpty()) {
+            try {
+                userMapper.insertUserRole(user.getUserId(), roleList);
+            } catch (Exception e) {
+                throw new Exception("插入角色用户关系数据异常！");
+            }
+        }
+        JSONObject jsonObject = new JSONObject();
+        jsonObject.put("uid", user.getUserId());
+        jsonObject.put("ctime", user.getCtime());
+
+        superAdmins.refresh();
+
+        return new ApiResult(ResultCode.SUCCESS, jsonObject);
     }
 
     /**
@@ -329,7 +413,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
 
         if (dataRange == RoleConstatnt.ROLE_DATARANGE_DEPARTMENT_ONLY) {
 
-            List<Dept> deptlist =  deptMapper.getDeptFathers(user.getDeptId());
+            List<Dept> deptlist = deptMapper.getDeptFathers(user.getDeptId());
             return deptlist;
         }
 
@@ -358,6 +442,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
 
     /**
      * 角色select options 回显
+     *
      * @param user
      * @return
      * @throws Exception

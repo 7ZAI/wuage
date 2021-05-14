@@ -8,17 +8,13 @@ import com.wuage.Result.ResultCode;
 import com.wuage.annotation.LogInfo;
 import com.wuage.annotation.RepeatSubmit;
 import com.wuage.component.RolePermissionCacheManager;
-import com.wuage.component.SuperAdmins;
 
 import com.wuage.entity.Dept;
-import com.wuage.entity.Menu;
 import com.wuage.entity.Role;
-import com.wuage.entity.User;
 import com.wuage.entity.Vo.PageInfo;
 import com.wuage.service.DeptService;
-import com.wuage.service.MenuService;
 import com.wuage.service.RoleService;
-import org.apache.shiro.SecurityUtils;
+
 import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
@@ -34,20 +30,17 @@ import java.util.*;
 public class SysRoleController extends BaseController {
 
     private RoleService roleService;
-    private MenuService menuService;
+
     private DeptService deptService;
-    private SuperAdmins superAdmins;
 
     private RolePermissionCacheManager rolePermissionCacheManager;
 
     @Autowired
-    public SysRoleController(RoleService roleService, MenuService menuService,
-                             SuperAdmins superAdmins, DeptService deptService, RolePermissionCacheManager rolePermissionCacheManager) {
+    public SysRoleController(RoleService roleService,
+                              DeptService deptService, RolePermissionCacheManager rolePermissionCacheManager) {
 
         this.roleService = roleService;
-        this.menuService = menuService;
         this.deptService = deptService;
-        this.superAdmins = superAdmins;
         this.rolePermissionCacheManager = rolePermissionCacheManager;
     }
 
@@ -61,17 +54,7 @@ public class SysRoleController extends BaseController {
     @RequiresPermissions("system:role:view")
     @GetMapping("/role")
     public ApiResult getRoles(PageInfo pageInfo) throws Exception {
-
-        Integer total = roleService.getTotal(pageInfo);
-        JSONObject json = new JSONObject();
-
-        List<Role> roles = roleService.getRoles(pageInfo);
-
-        json.put("roles", roles);
-        json.put("total", total);
-
-        return new ApiResult(ResultCode.SUCCESS, json);
-
+        return roleService.getRoles(pageInfo);
     }
 
     /**
@@ -83,23 +66,7 @@ public class SysRoleController extends BaseController {
     @GetMapping("/role/menus")
     @RequiresPermissions({"system:role:add", "system:role:update"})
     public ApiResult getMenuPermissions() throws Exception {
-
-        User loginuser = (User) SecurityUtils.getSubject().getPrincipal();
-
-        List<Menu> menus;
-
-        PageInfo pageInfo = new PageInfo();
-
-        if (superAdmins.isSuperAdmin(loginuser.getUserId())) {
-
-            menus = menuService.getAllMenus(pageInfo);
-
-            return new ApiResult(ResultCode.SUCCESS, menus);
-        }
-
-        menus = menuService.getMenuByRole(loginuser.getUserId(), pageInfo);
-
-        return new ApiResult(ResultCode.SUCCESS, menus);
+        return roleService.getMenuPermissions();
     }
 
     /**
@@ -112,10 +79,7 @@ public class SysRoleController extends BaseController {
     @GetMapping("/role/menusSelected")
     @RequiresPermissions({"system:role:update"})
     public ApiResult getMenuSelected(@NotNull Integer roleId) throws Exception {
-
-        List<Integer> menuIds = roleService.getMenusRelation(roleId);
-
-        return new ApiResult(ResultCode.SUCCESS, menuIds);
+        return roleService.getMenusRelation(roleId);
     }
 
     /**
@@ -127,13 +91,7 @@ public class SysRoleController extends BaseController {
     @GetMapping("/role/deptTree")
     @RequiresPermissions({"system:role:view"})
     public ApiResult getDepartmentTree() throws Exception {
-
-        PageInfo pageInfo = new PageInfo();
-
-        List<Dept> departments = deptService.getAllDepartments(pageInfo);
-
-        return new ApiResult(ResultCode.SUCCESS, departments);
-
+        return roleService.getDepartmentTree();
     }
 
     /**
@@ -146,10 +104,7 @@ public class SysRoleController extends BaseController {
     @GetMapping("/role/selectedDeptTree")
     @RequiresPermissions({"system:role:update"})
     public ApiResult getSelectedDepts(@NotNull Integer roleId) throws Exception {
-
-        List<Integer> deptSelectedIds = roleService.getDeptRelationByRoleId(roleId);
-
-        return new ApiResult(ResultCode.SUCCESS, deptSelectedIds);
+        return roleService.getSelectedDepts(roleId);
     }
 
     /**
@@ -164,23 +119,7 @@ public class SysRoleController extends BaseController {
     @PostMapping("/role")
     @RequiresPermissions("system:role:add")
     public ApiResult add(@Validated Role role) throws Exception {
-
-
-        String roleName = role.getRoleName().trim();
-
-        role.setRoleName(roleName);
-
-        if (roleService.roleNameIsExit(roleName) > 0) {
-
-            return ApiResult.fail("已存在该角色名称！");
-        }
-
-        if ("".equals(roleName)) {
-            return ApiResult.fail("非法参数！");
-        }
-
         return roleService.addRole(role);
-
     }
 
     /**
@@ -195,9 +134,7 @@ public class SysRoleController extends BaseController {
     @DeleteMapping("/role/{roleId}")
     @RequiresPermissions("system:role:delete")
     public ApiResult delete(@PathVariable @NotNull Integer roleId) throws Exception {
-
         return roleService.deleteRole(roleId);
-
     }
 
     /**
@@ -221,12 +158,9 @@ public class SysRoleController extends BaseController {
     @RequiresPermissions("system:role:update")
     public ApiResult update(Role role) throws Exception {
 
-
-
         ApiResult result = roleService.updateRole(role);
 
         if (ApiResult.success().getCode().equals(result.getCode())){
-
             rolePermissionCacheManager.synchronizedPermission(role, (List<String>) result.getData());
         }
 
@@ -238,16 +172,13 @@ public class SysRoleController extends BaseController {
     @PutMapping("/role/status")
     @RequiresPermissions("system:role:update")
     public ApiResult updateStatus(Role role) throws Exception {
-
         return roleService.updateRoleStatus(role);
     }
 
     @RepeatSubmit
     @PutMapping("/role/dataRange")
     @RequiresPermissions("system:role:update")
-    public ApiResult updateDataRange(@RequestBody
-                                             JSONObject json) throws Exception {
-
+    public ApiResult updateDataRange(@RequestBody JSONObject json) throws Exception {
         return roleService.updateDataRange(json);
     }
 
