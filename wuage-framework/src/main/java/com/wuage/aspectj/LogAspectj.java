@@ -6,11 +6,10 @@ import com.wuage.constant.GlobalConstants;
 import com.wuage.entity.Log;
 import com.wuage.entity.User;
 import com.wuage.enums.OperateType;
-import com.wuage.service.LogService;
+import com.wuage.mapper.LogMapper;
 import com.wuage.utils.DateUtils;
 import com.wuage.utils.IpUtils;
 import com.wuage.utils.ServletUtils;
-import com.wuage.utils.spring.SpringUtils;
 import org.apache.shiro.SecurityUtils;
 import org.aspectj.lang.JoinPoint;
 import org.aspectj.lang.Signature;
@@ -20,6 +19,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
+import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import java.lang.reflect.Method;
 import java.util.Map;
@@ -37,6 +37,8 @@ public class LogAspectj {
 
     private Logger logger = LoggerFactory.getLogger(this.getClass());
 
+    @Resource
+    private LogMapper logMapper;
 
     //织入点
     @Pointcut("@annotation(com.wuage.annotation.LogInfo)")
@@ -116,12 +118,11 @@ public class LogAspectj {
 
         //待 异步处理 目前先这样吧
         log.setResult(JSON.toJSONString(jsonResult));
-        LogService logService = SpringUtils.getBean(LogService.class);
 
         Long costtime = System.currentTimeMillis() - TIME_THREADLOCAL.get();
         String ctime = DateUtils.millToSecond(costtime);
         log.setCostTime(ctime);
-        logService.save(log);
+        logMapper.insert(log);
 
         logger.info( "方法："+methodSignature.getMethod().getName()+"  耗时："+ ctime);
     }

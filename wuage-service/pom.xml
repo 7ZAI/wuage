@@ -16,26 +16,10 @@
 
     <dependencies>
 
-
         <dependency>
             <groupId>com.wuage</groupId>
-            <artifactId>wuage-dao</artifactId>
+            <artifactId>wuage-framework</artifactId>
             <version>1.0</version>
-        </dependency>
-
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-aop</artifactId>
-        </dependency>
-        <!--Shiro核心框架 -->
-        <dependency>
-            <groupId>org.apache.shiro</groupId>
-            <artifactId>shiro-core</artifactId>
-        </dependency>
-
-        <dependency>
-            <groupId>org.apache.shiro</groupId>
-            <artifactId>shiro-ehcache</artifactId>
         </dependency>
 
     </dependencies>

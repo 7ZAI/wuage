@@ -1,4 +1,4 @@
-package component;
+package com.wuage.component;
 
 
 import com.wuage.mapper.UserMapper;

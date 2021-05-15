@@ -17,7 +17,7 @@
 
         <dependency>
             <groupId>com.wuage</groupId>
-            <artifactId>wuage-service</artifactId>
+            <artifactId>wuage-dao</artifactId>
             <version>1.0</version>
         </dependency>
 

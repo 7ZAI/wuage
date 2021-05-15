@@ -1,6 +1,7 @@
 package com.wuage.shiro.Realm;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.wuage.component.SuperAdmins;
 import com.wuage.component.SysConfigMap;
 import com.wuage.constant.SysConfigConstant;
 import com.wuage.constant.UserConstant;
@@ -10,7 +11,6 @@ import com.wuage.exception.customize.CaptchaException;
 import com.wuage.mapper.UserMapper;
 import com.wuage.shiro.token.UsernamePasswordCaptchaToken;
 import com.wuage.utils.DateUtils;
-import component.SuperAdmins;
 import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.authc.*;
 import org.apache.shiro.authz.AuthorizationInfo;

@@ -25,7 +25,7 @@
         <!--导入dao层-->
         <dependency>
             <groupId>com.wuage</groupId>
-            <artifactId>wuage-framework</artifactId>
+            <artifactId>wuage-service</artifactId>
             <version>1.0</version>
         </dependency>
 

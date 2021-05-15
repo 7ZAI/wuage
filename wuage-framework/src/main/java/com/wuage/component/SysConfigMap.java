@@ -1,12 +1,12 @@
 package com.wuage.component;
 
+import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.wuage.entity.Config;
-import com.wuage.service.ConfigService;
+import com.wuage.mapper.ConfigMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.PostConstruct;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -20,7 +20,7 @@ import java.util.stream.Collectors;
 public class SysConfigMap {
 
     @Autowired
-    private ConfigService configService;
+    private ConfigMapper configMapper;
 
     private ConcurrentHashMap<String, Integer> map;
 
@@ -29,7 +29,8 @@ public class SysConfigMap {
 
     @PostConstruct
     private void init() {
-        List<Config> list = configService.list();
+        //
+        List<Config> list = configMapper.selectList(Wrappers.emptyWrapper());
         Map resultMap  =  list.stream().collect(Collectors.toMap(Config::getConfigCode, Config::getConfigValue));
         this.map = new ConcurrentHashMap<>(resultMap);
     }
