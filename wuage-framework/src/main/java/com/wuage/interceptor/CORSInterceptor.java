@@ -23,7 +23,7 @@ public class CORSInterceptor implements HandlerInterceptor {
 
         //允许跨域,不能放在postHandle内
         response.setHeader("Access-Control-Allow-Origin", "*");
-        if (request.getMethod().equals("OPTIONS")) {
+        if ("OPTIONS".equals(request.getMethod())) {
             response.addHeader("Access-Control-Allow-Methods", "GET,HEAD,POST,PUT,DELETE,TRACE,OPTIONS,PATCH");
             response.addHeader("Access-Control-Allow-Headers", "Content-Type, Accept, Authorization");
         }

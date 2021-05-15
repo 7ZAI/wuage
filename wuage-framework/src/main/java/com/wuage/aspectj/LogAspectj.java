@@ -125,5 +125,6 @@ public class LogAspectj {
         logMapper.insert(log);
 
         logger.info( "方法："+methodSignature.getMethod().getName()+"  耗时："+ ctime);
+        TIME_THREADLOCAL.remove();
     }
 }

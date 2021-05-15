@@ -24,7 +24,7 @@ import java.util.Deque;
 
 public class KickoutSessionFilter  extends AccessControlFilter {
 
-    private final static ObjectMapper objectMapper = new ObjectMapper();
+    private final static ObjectMapper OBJECTMAPPER = new ObjectMapper();
 
     /**
      * 同一个用户最大会话数
@@ -138,7 +138,7 @@ public class KickoutSessionFilter  extends AccessControlFilter {
         if (ServletUtils.isAjaxRequest(req))
         {
             ApiResult ajaxResult = new ApiResult(ResultCode.USER_KICKOUT);
-            ServletUtils.renderString(res, objectMapper.writeValueAsString(ajaxResult));
+            ServletUtils.renderString(res, OBJECTMAPPER.writeValueAsString(ajaxResult));
         }
 
         return false;

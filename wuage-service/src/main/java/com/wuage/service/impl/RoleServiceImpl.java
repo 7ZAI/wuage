@@ -286,7 +286,7 @@ public class RoleServiceImpl extends ServiceImpl<RoleMapper, Role> implements Ro
         this.update(new LambdaUpdateWrapper<Role>().eq(Role::getRoleId, role.getRoleId())
                 .set(Role::getDataRange, rangeType));
 
-        if (rangeType == RoleConstatnt.ROLE_DATARANGE_CUSTOM) {
+        if (RoleConstatnt.ROLE_DATARANGE_CUSTOM.equals(rangeType) ) {
 
 
             List<Integer> depts = JSON.parseArray(json.getString("depts"), Integer.class);

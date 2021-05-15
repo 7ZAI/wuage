@@ -61,7 +61,6 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
     private EhCacheManager ehCacheManager;
 
 
-
     @Override
     public List<Role> getRolesByUserId(Integer userId) throws Exception {
         return userMapper.getRolesById(userId);
@@ -133,7 +132,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
      */
     @Transactional(rollbackFor = Exception.class)
     @Override
-    public ApiResult updateUser( User user) throws Exception {
+    public ApiResult updateUser(User user) throws Exception {
 
         User currentUser = (User) SecurityUtils.getSubject().getPrincipal();
         Integer updateUserId = user.getUserId();
@@ -195,12 +194,12 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
 
         User oldUser = userMapper.selectById(userId);
 
-        if(superAdmins.isSuperAdmin(userId) && !superAdmins.isSuperAdmin(currentUser.getUserId())){
+        if (superAdmins.isSuperAdmin(userId) && !superAdmins.isSuperAdmin(currentUser.getUserId())) {
             return ApiResult.fail("没有锁定超级管理员的权限！");
         }
 
         if (Objects.isNull(oldUser)) {
-            return  new ApiResult(ResultCode.USER_NOT_EXITS);
+            return new ApiResult(ResultCode.USER_NOT_EXITS);
         }
 
         if (lockedStatus.equals(UserConstant.USER_NORMAL) &&
@@ -260,7 +259,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
 
         User currentUser = (User) SecurityUtils.getSubject().getPrincipal();
 
-        if(superAdmins.isSuperAdmin(userId) && !superAdmins.isSuperAdmin(currentUser.getUserId())){
+        if (superAdmins.isSuperAdmin(userId) && !superAdmins.isSuperAdmin(currentUser.getUserId())) {
             return ApiResult.fail("没有操作超级管理员的权限！");
         }
 
@@ -316,7 +315,6 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
         List<Role> listroles = getRolesOptions(user);
 
         JSONObject json = new JSONObject();
-
         json.put("depts", depts);
         json.put("userData", iPage);
         json.put("rolesOptions", listroles);
@@ -405,19 +403,19 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
 
         List<Dept> depts = new ArrayList<>();
 
-        if (dataRange == RoleConstatnt.ROLE_DATARANGE_PERSONAL) {
+        if (RoleConstatnt.ROLE_DATARANGE_PERSONAL.equals(dataRange)) {
 
             return depts;
 
         }
 
-        if (dataRange == RoleConstatnt.ROLE_DATARANGE_DEPARTMENT_ONLY) {
+        if (RoleConstatnt.ROLE_DATARANGE_DEPARTMENT_ONLY.equals(dataRange)) {
 
             List<Dept> deptlist = deptMapper.getDeptFathers(user.getDeptId());
             return deptlist;
         }
 
-        if (dataRange == RoleConstatnt.ROLE_DATARANGE_DEPARTMENT_ALL) {
+        if (RoleConstatnt.ROLE_DATARANGE_DEPARTMENT_ALL.equals(dataRange)) {
 
             List<Dept> fatherlist = deptMapper.getDeptFathers(user.getDeptId());
             List<Dept> sonlist = deptMapper.getDeptSons(user.getDeptId());
@@ -426,12 +424,12 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
 
         }
 
-        if (dataRange == RoleConstatnt.ROLE_DATARANGE_CUSTOM) {
+        if (RoleConstatnt.ROLE_DATARANGE_CUSTOM.equals(dataRange)) {
             List<Dept> deptlist = userMapper.getDeptsByUserId(user.getUserId());
             return deptlist;
         }
 
-        if (dataRange == RoleConstatnt.ROLE_DATARANGE_ALL) {
+        if (RoleConstatnt.ROLE_DATARANGE_ALL.equals(dataRange) ) {
 
             List<Dept> deptlist = deptService.list();
 

@@ -13,8 +13,6 @@ import org.apache.shiro.config.ConfigurationException;
 import org.apache.shiro.io.ResourceUtils;
 import org.apache.shiro.mgt.SecurityManager;
 import org.apache.shiro.session.mgt.SessionManager;
-import org.apache.shiro.session.mgt.eis.MemorySessionDAO;
-import org.apache.shiro.session.mgt.eis.SessionDAO;
 import org.apache.shiro.spring.security.interceptor.AuthorizationAttributeSourceAdvisor;
 import org.apache.shiro.spring.web.ShiroFilterFactoryBean;
 import org.apache.shiro.web.mgt.CookieRememberMeManager;
@@ -111,7 +109,6 @@ public class ShiroConfig {
     public SessionManager sessionManager(EhCacheManager ehCacheManager)
     {
         DefaultWebSessionManager sessionManager = new DefaultWebSessionManager();
-//        sessionManager.setSessionDAO();
         sessionManager.setCacheManager(ehCacheManager);
         sessionManager.setDeleteInvalidSessions(true);
         // 设置全局session超时时间

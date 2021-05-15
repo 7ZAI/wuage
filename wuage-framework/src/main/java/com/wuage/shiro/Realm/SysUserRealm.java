@@ -24,6 +24,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import javax.annotation.Resource;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -36,8 +37,7 @@ public class SysUserRealm extends AuthorizingRealm {
 
     private static final Logger logger = LoggerFactory.getLogger(SysUserRealm.class);
 
-
-    @Autowired
+    @Resource
     private UserMapper userMapper;
     @Autowired
     private SysConfigMap sysConfigMap;
@@ -105,7 +105,7 @@ public class SysUserRealm extends AuthorizingRealm {
         Integer captchaOpen = sysConfigMap.get(SysConfigConstant.CAPTCHA_SWITCH);
 
         if (captchaOpen.equals(SysConfigConstant.OPEN)) {
-            if (code == null || code.trim().equals("")) {
+            if (code == null || "".equals(code.trim())) {
                 throw new CaptchaException("验证码不能为空！");
             }
             Session session = SecurityUtils.getSubject().getSession();

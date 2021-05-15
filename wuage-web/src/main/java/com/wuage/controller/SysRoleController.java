@@ -130,7 +130,6 @@ public class SysRoleController extends BaseController {
      * @throws Exception
      */
     @LogInfo(title = "删除角色")
-    @Transactional(rollbackFor = Exception.class)
     @DeleteMapping("/role/{roleId}")
     @RequiresPermissions("system:role:delete")
     public ApiResult delete(@PathVariable @NotNull Integer roleId) throws Exception {

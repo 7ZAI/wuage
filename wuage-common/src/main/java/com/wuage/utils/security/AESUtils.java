@@ -20,11 +20,11 @@ public class AESUtils {
             if (strKey == null) {
                 strKey = "";
             }
-            KeyGenerator _generator = KeyGenerator.getInstance("AES");
+            KeyGenerator generator = KeyGenerator.getInstance("AES");
             SecureRandom secureRandom = SecureRandom.getInstance("SHA1PRNG");
             secureRandom.setSeed(strKey.getBytes());
-            _generator.init(128, secureRandom);
-            return _generator.generateKey();
+            generator.init(128, secureRandom);
+            return generator.generateKey();
         } catch (Exception e) {
             throw new RuntimeException(" 密钥出现异常 ");
         }

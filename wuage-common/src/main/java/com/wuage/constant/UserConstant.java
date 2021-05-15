@@ -31,7 +31,7 @@ public class UserConstant {
 
     public final static Integer USER_SEX_MAN = 1;
 
-    public final static Integer USER_SEX_women = 0;
+    public final static Integer USER_SEX_WOMEN = 0;
 
 
 
