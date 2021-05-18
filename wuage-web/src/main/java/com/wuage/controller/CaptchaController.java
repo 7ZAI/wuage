@@ -3,7 +3,6 @@ package com.wuage.controller;
 
 import com.google.code.kaptcha.Producer;
 import com.wuage.constant.UserConstant;
-import com.wuage.utils.ServletUtils;
 import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.session.Session;
 import org.springframework.stereotype.Controller;
@@ -14,7 +13,6 @@ import javax.imageio.ImageIO;
 import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
 import java.awt.image.BufferedImage;
 
 /**

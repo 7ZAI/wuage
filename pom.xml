@@ -28,6 +28,7 @@
         <swagger.version>2.9.2</swagger.version>
         <fastjson.version>1.2.73</fastjson.version>
         <jasypt.version>2.1.0</jasypt.version>
+        <hutool.version>5.6.5</hutool.version>
     </properties>
 
     <dependencyManagement>
@@ -119,6 +120,13 @@
                 <groupId>com.github.penggle</groupId>
                 <artifactId>kaptcha</artifactId>
                 <version>${kaptcha.version}</version>
+            </dependency>
+
+            <!--hutool 工具代码库 -->
+            <dependency>
+                <groupId>cn.hutool</groupId>
+                <artifactId>hutool-all</artifactId>
+                <version>${hutool.version}</version>
             </dependency>
 
             <!--getter setter 插件-->
