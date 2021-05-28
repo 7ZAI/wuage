@@ -30,17 +30,16 @@ public class CaptchaController extends BaseController {
         ServletOutputStream sos = null;
         try {
             Session session = SecurityUtils.getSubject().getSession();
-//            System.out.println("session2" + session2.getId());
             //设置缓存控制 可以设置Pragma 或Cache-Control 这里设置为不缓存
             response.setDateHeader("Expires", 0);
-            response.setHeader("Pragma", "no-cache"); // Pragma 已逐渐废弃 这里是为了兼容
+            // Pragma 已逐渐废弃 这里是为了兼容
+            response.setHeader("Pragma", "no-cache");
 
             response.setHeader("Cache-Control", "no-store, no-cache, must-revalidate");
             response.addHeader("Cache-Control", "post-check=0, pre-check=0");
             response.setContentType("image/jpeg");
 
             String code = captchaProducer.createText();
-
             session.setAttribute(UserConstant.CAPTCHA_KEY, code);
 
             BufferedImage codeImage = captchaProducer.createImage(code);

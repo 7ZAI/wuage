@@ -16,23 +16,6 @@ public class BaseController {
 
     protected final Logger logger = LoggerFactory.getLogger(BaseController.class);
 
-    /**
-     * 将前台传递过来的日期格式的字符串，自动转化为LocalDateTime类型
-     */
-//    @InitBinder
-//    public void initBinder(WebDataBinder binder)
-//    {
-//        // LocalDateTime 类型转换
-//        binder.registerCustomEditor(LocalDateTime.class, new PropertyEditorSupport()
-//        {
-//            @Override
-//            public void setAsText(String text)
-//            {
-//                setValue(DateUtils.parseLocalDateTime(text));
-//            }
-//        });
-//    }
-
 
     /**得到request对象
      * @return

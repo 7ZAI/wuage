@@ -1,3 +1,4 @@
+import cn.hutool.json.XML;
 import com.wuage.entity.Config;
 import com.wuage.entity.Menu;
 import org.apache.shiro.crypto.hash.Md5Hash;
