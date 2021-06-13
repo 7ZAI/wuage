@@ -1,8 +1,10 @@
 package com.wuage.config;
 
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
+import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import com.fasterxml.jackson.annotation.PropertyAccessor;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.jsontype.impl.LaissezFaireSubTypeValidator;
 import org.springframework.context.annotation.Bean;
 import org.springframework.data.redis.connection.lettuce.LettuceConnectionFactory;
 import org.springframework.data.redis.core.RedisTemplate;
@@ -18,10 +20,11 @@ import java.net.UnknownHostException;
  * @Date 2021/5/28 10:14
  */
 public class RedisConfig {
+
     @Resource
     private LettuceConnectionFactory lettuceConnectionFactory;
 
-    @Bean(name="myredisTemplate")
+    @Bean(name = "myredisTemplate")
     public RedisTemplate<Object, Object> redisTemplate(LettuceConnectionFactory lettuceConnectionFactory)
             throws UnknownHostException {
 
@@ -39,7 +42,8 @@ public class RedisConfig {
 
         ObjectMapper om = new ObjectMapper();
         om.setVisibility(PropertyAccessor.ALL, JsonAutoDetect.Visibility.ANY);
-        om.enableDefaultTyping(ObjectMapper.DefaultTyping.NON_FINAL);
+        om.activateDefaultTyping(LaissezFaireSubTypeValidator.instance, ObjectMapper.DefaultTyping.NON_FINAL, JsonTypeInfo.As.WRAPPER_ARRAY);
+
         jackson2JsonRedisSerializer.setObjectMapper(om);
 
         template.setKeySerializer(stringRedisSerializer);

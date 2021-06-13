@@ -51,38 +51,6 @@ transaction:
 spring:
   profiles:
     active: dev
-  # 服务模块
-  #  devtools:
-  #    livereload:
-  #      enabled: true
-  #    restart:
-  #      # 热部署开关
-  #      enabled: true
-  #      additional-paths: src/main/java
-  #  # 模板引擎
-  #  thymeleaf:
-  #    mode: HTML
-  #    encoding: utf-8
-  #    # 禁用缓存
-  #    cache: false
-  #  # 资源信息
-  #  messages:
-  #    # 国际化资源文件路径
-  #    basename: static/i18n/messages
-  #  jackson:
-  #    time-zone: GMT+8
-  #    date-format: yyyy-MM-dd HH:mm:ss
-  #  profiles:
-  #    active: druid
-  #  # 文件上传
-  #  servlet:
-  #     multipart:
-  #       # 单个文件大小
-  #       max-file-size:  10MB
-  #       # 设置总上传的文件大小
-  #       max-request-size:  20MB
-  #      password: ENC(I5D96jf97heNMtOGZj7mHw==)
-  # 数据源配置
   datasource:
     type: com.alibaba.druid.pool.DruidDataSource
     driverClassName: com.mysql.cj.jdbc.Driver
@@ -191,7 +159,9 @@ spring:
   datasource:
     druid:
       password: ENC(I5D96jf97heNMtOGZj7mHw==)
-
+#  redis:
+#    lettuce:
+#      pool:
 
 logging:
   level:

@@ -14,7 +14,7 @@ import java.io.PrintWriter;
 
 /**
  * 因为前后分离所以
- * 自定义的user 过滤器来返回json 数据
+ * 自定义的user 过滤器 返回json 数据
  * 而不用shiro 默认的重定向
  */
 public class MyUserFilter extends UserFilter {
