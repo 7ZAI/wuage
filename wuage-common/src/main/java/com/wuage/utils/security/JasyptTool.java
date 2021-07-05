@@ -14,13 +14,9 @@ public class JasyptTool {
 
         StandardPBEStringEncryptor se = new StandardPBEStringEncryptor();
 
-        se.setPassword("");
-//
-//        String postgres = se.encrypt("");
-//
-//        System.out.println(postgres);
-//
-        System.out.println(se.decrypt(""));
+        se.setPassword("123456");
+
+        System.out.println(se.encrypt("123456"));
     }
 
 }

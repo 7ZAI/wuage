@@ -1,7 +1,6 @@
 package com.wuage.utils.security;
 
-import sun.misc.BASE64Decoder;
-import sun.misc.BASE64Encoder;
+
 
 import javax.crypto.Cipher;
 import javax.crypto.KeyGenerator;
@@ -36,7 +35,8 @@ public class AESUtils {
         Cipher cipher = Cipher.getInstance(CIPHER_ALGORITHM);
         cipher.init(Cipher.ENCRYPT_MODE, secureKey, sr);
         byte[] bt = cipher.doFinal(data.getBytes());
-        String strS = new BASE64Encoder().encode(bt);
+//        String strS = new BASE64Encoder().encode(bt);
+        String strS = "";
         return strS;
     }
 
@@ -46,7 +46,8 @@ public class AESUtils {
         Cipher cipher = Cipher.getInstance(CIPHER_ALGORITHM);
         Key secureKey = getKey(key);
         cipher.init(Cipher.DECRYPT_MODE, secureKey, sr);
-        byte[] res = new BASE64Decoder().decodeBuffer(message);
+//        byte[] res = new BASE64Decoder().decodeBuffer(message);
+        byte[] res = null;
         res = cipher.doFinal(res);
         return new String(res);
     }
