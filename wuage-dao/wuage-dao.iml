@@ -16,7 +16,6 @@
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
     <orderEntry type="module" module-name="wuage-common" />
-    <orderEntry type="module" module-name="wuage-common" />
     <orderEntry type="library" name="Maven: org.springframework:spring-web:5.2.1.RELEASE" level="project" />
     <orderEntry type="library" name="Maven: org.springframework:spring-beans:5.2.1.RELEASE" level="project" />
     <orderEntry type="library" name="Maven: org.springframework:spring-core:5.2.1.RELEASE" level="project" />

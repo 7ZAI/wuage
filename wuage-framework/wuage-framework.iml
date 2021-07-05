@@ -22,8 +22,6 @@
     <orderEntry type="sourceFolder" forTests="false" />
     <orderEntry type="module" module-name="wuage-dao" />
     <orderEntry type="module" module-name="wuage-common" />
-    <orderEntry type="module" module-name="wuage-dao" />
-    <orderEntry type="module" module-name="wuage-common" />
     <orderEntry type="library" name="Maven: org.springframework.boot:spring-boot-starter-log4j2:2.2.1.RELEASE" level="project" />
     <orderEntry type="library" name="Maven: org.apache.logging.log4j:log4j-slf4j-impl:2.12.1" level="project" />
     <orderEntry type="library" name="Maven: org.apache.logging.log4j:log4j-api:2.12.1" level="project" />
@@ -51,8 +49,8 @@
     <orderEntry type="library" name="Maven: org.apache.xmlbeans:xmlbeans:3.1.0" level="project" />
     <orderEntry type="library" name="Maven: org.apache.commons:commons-compress:1.19" level="project" />
     <orderEntry type="library" name="Maven: com.github.virtuald:curvesapi:1.06" level="project" />
-    <orderEntry type="library" name="Maven: com.baomidou:mybatis-plus-boot-starter:3.1.0" level="project" />
-    <orderEntry type="library" name="Maven: com.baomidou:mybatis-plus:3.1.0" level="project" />
+    <orderEntry type="library" name="Maven: com.baomidou:mybatis-plus-boot-starter:3.4.3" level="project" />
+    <orderEntry type="library" name="Maven: com.baomidou:mybatis-plus:3.4.3" level="project" />
     <orderEntry type="library" name="Maven: com.baomidou:mybatis-plus-generator:3.1.0" level="project" />
     <orderEntry type="library" name="Maven: com.baomidou:mybatis-plus-extension:3.1.0" level="project" />
     <orderEntry type="library" name="Maven: com.baomidou:mybatis-plus-core:3.1.0" level="project" />
