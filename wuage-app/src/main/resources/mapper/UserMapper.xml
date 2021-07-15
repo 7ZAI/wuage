@@ -1,0 +1,128 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="UserMapper">
+
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="User">
+        <id column="USER_ID" property="userId"/>
+        <result column="LOGIN_NAME" property="loginName"/>
+        <result column="PASSWORD" property="password"/>
+        <result column="USERNAME" property="username"/>
+        <result column="AVATAR" property="avatar"/>
+        <result column="SEX" property="sex"/>
+        <result column="PHONE" property="phone"/>
+        <result column="LAST_LOGIN_TIME" property="lastLoginTime"/>
+        <result column="LOCKED" property="locked"/>
+        <result column="SALT" property="salt"/>
+        <result column="DEPT_ID" property="deptId"/>
+        <result column="CREATER" property="creater"/>
+        <result column="UPDATE_BY" property="updateBy"/>
+        <result column="REMARK" property="remark"/>
+        <result column="LOCK_TIME" property="lockTime"/>
+        <result column="MODIFY_TIME" property="modifyTime"/>
+        <result column="TS" property="ts"/>
+    </resultMap>
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        USER_ID, LOGIN_NAME, PASSWORD, USERNAME, AVATAR, SEX, PHONE, LAST_LOGIN_TIME, LOCKED, SALT, DEPT_ID, CREATER, UPDATE_BY, REMARK, LOCK_TIME, MODIFY_TIME, TS
+    </sql>
+
+
+    <resultMap id="allUserInfoMap" type="SystemUserInfo">
+        <id column="user_id" property="userId"/>
+        <result column="username" property="username"/>
+        <result column="login_name" property="loginName"/>
+        <result column="avatar" property="avatar"/>
+        <result column="sex" property="sex"/>
+        <result column="phone" property="phone"/>
+        <result column="ctime" property="ctime"/>
+        <result column="last_login_time" property="lastLoginTime"/>
+
+        <collection property="menus" ofType="Menu">
+            <id property="menuId" column="menu_id"/>
+            <result column="menu_name" property="menuName"/>
+            <result column="icon" property="icon"/>
+            <result column="url" property="url"/>
+            <result column="order_number" property="orderNumber"/>
+            <result column="component_path" property="componentPath"/>
+        </collection>
+    </resultMap>
+
+
+    <!--前端数据列 剔除密码盐值等-->
+    <sql id="Page_Column_List">
+        u.user_id, u.login_name, u.username, u.avatar, u.sex, u.phone, u.ctime, u.last_login_time, u.locked,
+        u.dept_id, u.remark
+    </sql>
+
+    <select id="getRolesById" parameterType="java.lang.Integer" resultType="Role">
+        select distinct r.role_id,role_code,status, role_code, data_range,role_type,role_name
+          from sys_role r
+          left join sys_user_role ur  on r.role_id = ur.role_id
+          where ur.user_id = #{userId}
+    </select>
+
+
+    <select id="getPermissionString" parameterType="java.lang.Integer" resultType="String">
+        select distinct permission
+        from sys_menu m
+        left join sys_role_menu rm on m.menu_id = rm.menu_id
+        left join sys_user_role ur on ur.role_id = rm.role_id
+        where ur.user_id = #{userId}
+    </select>
+
+    <insert id="insertUserRole">
+        insert into
+        sys_user_role values
+        <foreach collection="roles" item="item" index="index" separator=",">
+            (#{userId},#{item})
+        </foreach>
+    </insert>
+
+    <!--根据数据权限查询-->
+    <select id="getUserList" resultMap="BaseResultMap">
+        select
+        <include refid="Page_Column_List"></include>
+        from sys_user u
+        where u.dept_id in (
+        <foreach collection="depts" item="item" index="index" separator=",">
+            #{item}
+        </foreach>
+        )
+        <if test="pageInfo.keywords != null and pageInfo.keywords != ''">
+            and (u.username like CONCAT('%',#{pageInfo.keywords},'%')
+            or u.login_name like CONCAT('%',#{pageInfo.keywords},'%'))
+        </if>
+
+        <if test="pageInfo.status == 0">
+            and u.locked = #{pageInfo.status}
+        </if>
+        <if test="pageInfo.status == 1">
+            and u.locked >= #{pageInfo.status}
+        </if>
+
+    </select>
+
+
+    <select id="getSuperAdminIds" resultType="integer">
+        select user_id from sys_user_role where role_id = 1
+    </select>
+
+    <select id="getDeptsByUserId" parameterType="int" resultType="Dept">
+        select d.* from sys_dept d,sys_dept_role sdr,sys_user_role sur
+        where sdr.role_id = sur.role_id
+         and  sdr.dept_id = d.dept_id and sur.user_id = #{userId}
+    </select>
+
+    <delete id="deleteUserRoleRelations" parameterType="java.lang.Integer">
+        delete from sys_user_role where user_id = #{userId}
+    </delete>
+
+    <delete id="deleteUserRoleRelationBatch">
+        delete from sys_user_role where user_id in
+        <foreach collection="userIds" item="item" index="index" separator="," open="(" close=")">
+            #{item}
+        </foreach>
+    </delete>
+</mapper>

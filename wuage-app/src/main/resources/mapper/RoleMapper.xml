@@ -1,0 +1,132 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="RoleMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="Role">
+        <id column="ROLE_ID" property="roleId"/>
+        <result column="ROLE_NAME" property="roleName"/>
+        <result column="CREATER" property="creater"/>
+        <result column="UPDATE_BY" property="updateBy"/>
+        <result column="REMARK" property="remark"/>
+        <result column="STATUS" property="status"/>
+        <result column="ROLE_CODE" property="roleCode"/>
+        <result column="DATA_RANGE" property="dataRange"/>
+        <result column="ROLE_TYPE" property="roleType"/>
+        <result column="MODIFY_TIME" property="modifyTime"/>
+        <result column="TS" property="ts"/>
+    </resultMap>
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        ROLE_ID, ROLE_NAME, CREATER, UPDATE_BY, REMARK, STATUS, ROLE_CODE, DATA_RANGE, ROLE_TYPE, MODIFY_TIME, TS
+    </sql>
+
+    <sql id="selectAllField">
+        select r.role_id, r.role_name, r.creater, r.ctime, r.update_by,
+        r.update_time, r.remark, r.status, r.role_code, r.data_range,r.role_type from sys_role r
+    </sql>
+
+    <select id="getRolesByUserId" resultType="Role">
+
+        <include refid="selectAllField"></include>
+        left join sys_user_role ur on r.role_id = ur.role_id
+        where ur.user_id = #{userId}
+    </select>
+
+    <select id="getTotal" resultType="java.lang.Integer">
+        select count(*) from sys_role sr where 1 = 1
+        <if test="pageInfo.status != null and pageInfo.status != ''  or pageInfo.status == 0">
+            AND sr.role_status = #{pageInfo.status}
+        </if>
+        <if test="pageInfo.keywords != null and pageInfo.keywords != ''">
+            AND sr.role_name like CONCAT(#{pageInfo.keywords},'%')
+            or sr.role_code like CONCAT(#{pageInfo.keywords},'%')
+        </if>
+    </select>
+
+    <select id="getRolesByConidition" resultType="Role">
+        <bind name="limitstart" value="(pageInfo.page-1)*pageInfo.limit"/>
+        <include refid="selectAllField"></include>
+        join
+        (select role_id from sys_role sr where 1 = 1
+
+        <if test="pageInfo.status != null and pageInfo.status != '' or pageInfo.status == 0">
+            AND sr.role_status = #{pageInfo.status}
+        </if>
+
+        <if test="pageInfo.keywords != null and pageInfo.keywords != ''">
+            AND sr.role_name like CONCAT(#{pageInfo.keywords},'%')
+            or sr.role_code like CONCAT(#{pageInfo.keywords},'%')
+        </if>
+
+        order by role_id limit #{limitstart},#{pageInfo.limit}) as m
+        using(role_id)
+
+    </select>
+
+
+    <select id="roleNameIsExit" parameterType="java.lang.String" resultType="java.lang.Integer">
+        select count(*) from sys_role r where r.role_name = #{roleName}
+    </select>
+
+
+    <select id="getMenusRelation" parameterType="java.lang.Integer" resultType="java.lang.Integer">
+        select menu_id from sys_role_menu where role_id = #{roleId}
+    </select>
+
+    <select id="getPermissionByRoleId" parameterType="java.lang.Integer" resultType="java.lang.String">
+        select m.permission from sys_menu m left JOIN  sys_role_menu srm on m.menu_id = srm.menu_id
+         where srm.role_id = #{roleId}
+    </select>
+
+    <select id="getDeptRelationByRoleId" parameterType="java.lang.Integer" resultType="java.lang.Integer">
+        select dept_id from sys_dept_role where role_id = #{roleId}
+    </select>
+
+    <select id="getRolesOfUser" parameterType="int" resultType="Role">
+        <include refid="selectAllField"></include>
+        ,sys_user_role sur where r.role_id = sur.role_id and sur.user_id=#{userId}
+    </select>
+
+    <insert id="saveRoleMenuRelation">
+        insert into sys_role_menu values
+        <foreach collection="menuIds" item="item" index="index" separator=",">
+            (#{roleId},#{item})
+        </foreach>
+    </insert>
+
+    <insert id="saveRoleDeptRelation">
+        insert into sys_dept_role values
+        <foreach collection="depts" item="item" index="index" separator=",">
+            (#{item},#{roleId})
+        </foreach>
+    </insert>
+
+
+    <delete id="deleteRoleMenuRelation" parameterType="java.lang.Integer">
+        delete from sys_role_menu where role_id = #{roleId}
+    </delete>
+
+    <delete id="deleteRoleMenuRelationBatch">
+        delete from sys_role_menu where role_id in
+        <foreach collection="roleIds" item="item" index="index" separator="," open="(" close=")">
+            #{item}
+        </foreach>
+    </delete>
+
+    <delete id="deletAllDepRelationByRoleId" parameterType="java.lang.Integer">
+        delete from sys_dept_role where role_id = #{roleId}
+    </delete>
+
+    <delete id="deletRoleUserRelation" parameterType="int">
+        delete from sys_user_role where role_id = #{roleId}
+    </delete>
+
+    <delete id="deletRoleUserRelationBatch" parameterType="int">
+        delete from sys_user_role where role_id in
+        <foreach collection="roleIds" item="item" index="index" separator="," open="(" close=")">
+            #{item}
+        </foreach>
+    </delete>
+
+</mapper>

@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="DeptMapper">
+
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="Dept">
+        <id column="DEPT_ID" property="deptId"/>
+        <result column="DEPT_NAME" property="deptName"/>
+        <result column="DEPT_PARENT_ID" property="deptParentId"/>
+        <result column="LEADER" property="leader"/>
+        <result column="PHONE" property="phone"/>
+        <result column="CREATER" property="creater"/>
+        <result column="UPDATE_BY" property="updateBy"/>
+        <result column="REMARK" property="remark"/>
+        <result column="MODIFY_TIME" property="modifyTime"/>
+        <result column="TS" property="ts"/>
+    </resultMap>
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        DEPT_ID, DEPT_NAME, DEPT_PARENT_ID, LEADER, PHONE, CREATER, UPDATE_BY, REMARK, MODIFY_TIME, TS
+    </sql>
+
+
+    <sql id="selectAllField">
+        select d.dept_id, d.dept_name, d.dept_parent_id, d.leader, d.phone,
+         d.ctime, d.creater, d.update_time, d.update_by, d.remark
+    </sql>
+
+    <!--判断是否有子节点-->
+    <select id="hasChildren" parameterType="integer" resultType="integer">
+        select count(*) from sys_dept where dept_parent_id = #{deptId}
+    </select>
+
+    <select id="getDeptFathers" parameterType="int" resultType="Dept">
+        <include refid="selectAllField"></include>
+        from sys_dept d
+        WHERE FIND_IN_SET(dept_id,selectParentByChildId(#{deptId}));
+    </select>
+
+    <select id="getDeptSons" parameterType="int" resultType="Dept">
+        <include refid="selectAllField"></include>
+        from sys_dept d
+        WHERE FIND_IN_SET(dept_id,selectChildByParentId(#{deptId}));
+    </select>
+
+    <!--超级管理员 获取所有部门-->
+    <select id="getAllDepartments" resultMap="BaseResultMap">
+        <include refid="selectAllField"></include>
+        ,d2.dept_name as parentName
+        from sys_dept d
+        left join sys_dept d2 on d.dept_parent_id = d2.dept_id
+        where 1 = 1
+        <if test="pageInfo.keywords != null and pageInfo.keywords != ''">
+            and d.dept_name like concat('%', #{pageInfo.keywords} ,'%')
+        </if>
+    </select>
+
+</mapper>

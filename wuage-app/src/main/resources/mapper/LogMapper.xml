@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="LogMapper">
+
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="Log">
+        <id column="LOG_ID" property="logId"/>
+        <result column="OPERATOR_TYPE" property="operatorType"/>
+        <result column="RESULT" property="result"/>
+        <result column="IP" property="ip"/>
+        <result column="URL" property="url"/>
+        <result column="DESCRIPTION" property="description"/>
+        <result column="PARAM" property="param"/>
+        <result column="OPERATOR_NAME" property="operatorName"/>
+        <result column="ERROR_MSG" property="errorMsg"/>
+        <result column="LOG_TITLE" property="logTitle"/>
+        <result column="OPERATOR_ID" property="operatorId"/>
+        <result column="RESULT_TYPE" property="resultType"/>
+        <result column="COST_TIME" property="costTime"/>
+        <result column="MODIFY_TIME" property="modifyTime"/>
+        <result column="TS" property="ts"/>
+    </resultMap>
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        LOG_ID, OPERATOR_TYPE, RESULT, IP, URL, DESCRIPTION, PARAM, OPERATOR_NAME, ERROR_MSG, LOG_TITLE, OPERATOR_ID, RESULT_TYPE, COST_TIME, MODIFY_TIME, TS
+    </sql>
+
+    <select id="getLogs" resultType="Log">
+        <bind name="limitstart" value="(pageInfo.page-1)*pageInfo.limit"/>
+        select log_id, operator_type, result, inet_ntoa(ip) as ipString, log_time, url, description,cost_time, operator_name, error_msg,
+        log_title, operator_id, result_type
+        from sys_log
+        join
+        (select log_id from sys_log sl where 1 = 1
+
+        <if test="pageInfo.status != null and pageInfo.status != '' or pageInfo.status == 0">
+            AND sl.result_type = #{pageInfo.status}
+        </if>
+        <if test="pageInfo.startTime != null  ">
+            AND  <![CDATA[ sl.log_time >= #{pageInfo.startTime} ]]>
+        </if>
+        <if test="pageInfo.endTime != null  ">
+            AND <![CDATA[  sl.log_time <= #{pageInfo.endTime} ]]>
+        </if>
+
+        <if test="pageInfo.keywords != null and pageInfo.keywords != ''">
+            AND sl.log_title like CONCAT('%',#{pageInfo.keywords},'%')
+        </if>
+
+        order by log_time desc limit #{limitstart},#{pageInfo.limit}) as m
+        using(log_id)
+    </select>
+
+    <select id="getLogsTotal" resultType="java.lang.Integer">
+        select count(*)
+        from sys_log sl where 1=1
+
+        <if test="pageInfo.status != null and pageInfo.status != '' or pageInfo.status == 0">
+            AND sl.result_type = #{pageInfo.status}
+        </if>
+        <if test="pageInfo.startTime != null  ">
+            AND  <![CDATA[ sl.log_time >= #{pageInfo.startTime} ]]>
+        </if>
+        <if test="pageInfo.endTime != null  ">
+            AND <![CDATA[  sl.log_time <= #{pageInfo.endTime} ]]>
+        </if>
+
+        <if test="pageInfo.keywords != null and pageInfo.keywords != ''">
+            AND sl.log_title like CONCAT('%',#{pageInfo.keywords},'%')
+        </if>
+
+    </select>
+
+</mapper>
